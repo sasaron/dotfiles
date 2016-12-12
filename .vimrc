@@ -1,16 +1,3 @@
-" vundleを使う
-filetype plugin on
-
-set rtp+=~/.vim/vundle/
-call vundle#rc('~/.vim/bundle')
-
-" 使うプラグインを指定
-Bundle 'petdance/vim-perl'
-Bundle 'hotchpotch/perldoc-vim'
-" Bundle 'Shougo/neocomplcache'
-" Bundle 'Shougo/neosnippet'
-Bundle 'thinca/vim-quickrun'
-
 " Note: Skip initialization for vim-tiny or vim-small.
 if 0 | endif
 
@@ -28,14 +15,15 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 " Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
 
+NeoBundle 'morhetz/gruvbox'
 NeoBundle 'itchyny/lightline.vim'
-" NeoBundle 'vim-airline/vim-airline'
-" NeoBundle 'vim-airline/vim-airline-themes'
 
 call neobundle#end()
 
 " Required:
 filetype plugin indent on
+
+NeoBundleCheck
 
 " 大文字小文字のみの場合大文字小文字を無視
 set ignorecase
@@ -155,23 +143,24 @@ function! s:SID_PREFIX()
 endfunction
 
 " Set tabline.
-function! s:my_tabline()  "{{{
+function! s:my_tabline()
     let s = ''
     for i in range(1, tabpagenr('$'))
         let bufnrs = tabpagebuflist(i)
         let bufnr = bufnrs[tabpagewinnr(i) - 1]  " first window, first appears
         let no = i  " display 0-origin tabpagenr.
-        let mod = getbufvar(bufnr, '&modified') ? '!' : ' ' 
+        let mod = getbufvar(bufnr, '&modified') ? '!' : ' '
         let title = fnamemodify(bufname(bufnr), ':t')
+        let title = '[' . title . ']'
         let s .= '%'.i.'T'
-        let s .= '%#' . (i == tabpagenr() ? 'TabLineSel' : 'TabLine') . '#' 
-        let s .= '[' . no . ']' . title
-        let s .= mod 
+        let s .= '%#' . (i == tabpagenr() ? 'TabLineSel' : 'TabLine') . '#'
+        let s .= no . ':' . title
+        let s .= mod
         let s .= '%#TabLineFill# '
     endfor
     let s .= '%#TabLineFill#%T%=%#TabLine#'
     return s
-endfunction "}}}
+endfunction
 let &tabline = '%!'. s:SID_PREFIX() . 'my_tabline()'
 set showtabline=2
 
