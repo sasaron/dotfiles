@@ -1,0 +1,9 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_1='/Users/ryunosuke-sasaki/Documents/Task_scheduler'
+let g:netrw_dirhist_2='/Users/ryunosuke-sasaki/Documents/Task_scheduler/TaskScheduler/lib/TaskScheduler/Controller/Login'
+let g:netrw_dirhist_3='/Users/ryunosuke-sasaki/Documents/lodge/app/controllers'
+let g:netrw_dirhist_4='/Users/ryunosuke-sasaki/Documents/Task_scheduler/TaskScheduler/lib/TaskScheduler/Controller'
+let g:netrw_dirhist_5='/Users/ryunosuke-sasaki/Documents/Task_scheduler'
+let g:netrw_dirhist_6='/Users/ryunosuke-sasaki/Documents/perl_sample'
+let g:netrw_dirhist_7='/Users/ryunosuke-sasaki/Documents'

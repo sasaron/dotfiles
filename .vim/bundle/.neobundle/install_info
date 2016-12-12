@@ -1,0 +1,2 @@
+3.0
+{'neobundle.vim': {'checked_time': 1481446621, 'installed_uri': 'https://github.com/Shougo/neobundle.vim.git', 'installed_path': '/Users/ryunosuke-sasaki/.vim/bundle/neobundle.vim', 'revisions': {}, 'updated_time': '1476488244'}, 'lightline.vim': {'checked_time': 1481447777, 'installed_uri': 'https://github.com/itchyny/lightline.vim.git', 'installed_path': '/Users/ryunosuke-sasaki/.vim/bundle/lightline.vim', 'revisions': {}, 'updated_time': '1480734559'}}
