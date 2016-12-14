@@ -1,2 +1,4 @@
+gruvbox
 lightline.vim
 neobundle.vim
+unite.vim

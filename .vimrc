@@ -87,8 +87,6 @@ set background=dark
 " colorscheme molokai
 colorscheme gruvbox
 
-
-
 "---------------------------------------------------------------------------
 " ファイル操作に関する設定:
 "
@@ -99,77 +97,8 @@ set noswapfile
 " シンタックスハイライト
 syntax on
 
-"---------------------------------------------------------------------------
-"　ショートカット
-"---------------------------------------------------------------------------
-" nnoremap s <Nop>
-" nnoremap sj <C-w>j
-" nnoremap sk <C-w>k
-" nnoremap sl <C-w>l
-" nnoremap sh <C-w>h
-" nnoremap sJ <C-w>J
-" nnoremap sK <C-w>K
-" nnoremap sL <C-w>L
-" nnoremap sH <C-w>H
-" nnoremap sn gt
-" nnoremap sp gT
-" nnoremap sr <C-w>r
-" nnoremap s= <C-w>=
-" nnoremap sw <C-w>w
-" nnoremap so <C-w>_<C-w>|
-" nnoremap sO <C-w>=
-" nnoremap sN :<C-u>bn<CR>
-" nnoremap sP :<C-u>bp<CR>
-" nnoremap st :<C-u>tabnew<CR>
-" nnoremap sT :<C-u>Unite tab<CR>
-" nnoremap ss :<C-u>sp<CR>
-" nnoremap sv :<C-u>vs<CR>
-" nnoremap sq :<C-u>q<CR>
-" nnoremap sQ :<C-u>bd<CR>
-" nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
-" nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
-" 
-" call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')
-" call submode#enter_with('bufmove', 'n', '', 's<', '<C-w><')
-" call submode#enter_with('bufmove', 'n', '', 's+', '<C-w>+')
-" call submode#enter_with('bufmove', 'n', '', 's-', '<C-w>-')
-" call submode#map('bufmove', 'n', '', '>', '<C-w>>')
-" call submode#map('bufmove', 'n', '', '<', '<C-w><')
-" call submode#map('bufmove', 'n', '', '+', '<C-w>+')
-" call submode#map('bufmove', 'n', '', '-', '<C-w>-')
-
-" Anywhere SID.
-function! s:SID_PREFIX()
-    return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
-endfunction
-
-" Set tabline.
-function! s:my_tabline()
-    let s = ''
-    for i in range(1, tabpagenr('$'))
-        let bufnrs = tabpagebuflist(i)
-        let bufnr = bufnrs[tabpagewinnr(i) - 1]  " first window, first appears
-        let no = i  " display 0-origin tabpagenr.
-        let mod = getbufvar(bufnr, '&modified') ? '!' : ' '
-        let title = fnamemodify(bufname(bufnr), ':t')
-        let title = '[' . title . ']'
-        let s .= '%'.i.'T'
-        let s .= '%#' . (i == tabpagenr() ? 'TabLineSel' : 'TabLine') . '#'
-        let s .= no . ':' . title
-        let s .= mod
-        let s .= '%#TabLineFill# '
-    endfor
-    let s .= '%#TabLineFill#%T%=%#TabLine#'
-    return s
-endfunction
-let &tabline = '%!'. s:SID_PREFIX() . 'my_tabline()'
-set showtabline=2
-
 " screen 256色対応
 set t_Co=256
-
-" airlineの設定
-" let g:airline_powerline_fonts = 1
 
 " colorschemeの設定
 let g:gruvbox_contrast_dark='hard'
@@ -218,7 +147,6 @@ function! LightlineFugitive()
     else
         return ''
     endif
-endfunction
 
 function! LightlineFileformat()
     return winwidth(0) > 70 ? &fileformat : ''
@@ -235,6 +163,37 @@ endfunction
 function! LightlineMode()
     return winwidth(0) > 60 ? lightline#mode() : ''
 endfunction
+
+" Anywhere SID.
+function! s:SID_PREFIX()
+    return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
+endfunction
+
+" Set tabline.
+function! s:my_tabline()  "{{{
+    let s = ''
+    for i in range(1, tabpagenr('$'))
+        let bufnrs = tabpagebuflist(i)
+        let bufnr = bufnrs[tabpagewinnr(i) - 1]  " first window, firstappears
+        let no = i  " display 0-origin tabpagenr.
+        let mod = getbufvar(bufnr, '&modified') ? '!' : ' '
+        let title = fnamemodify(bufname(bufnr), ':t')
+        let title = '[' . title . ']'
+        let s .= '%'.i.'T'
+        let s .= '%#' . (i == tabpagenr() ?'TabLineSel' : 'TabLine') . '#'
+        let s .= no . ':' . title
+        let s .= mod
+        let s .= '%#TabLineFill# '
+    endfor
+    let s .='%#TabLineFill#%T%=%#TabLine#'
+    return s
+endfunction "}}}
+let &tabline = '%!'.s:SID_PREFIX() .'my_tabline()'
+set showtabline=2
+
+hi TabLineSel  term=bold cterm=bold,underline ctermfg=LightGray ctermbg=DarkBlue gui=bold,underline guifg=LightGray guibg=DarkBlue
+hi TabLine term=reverse cterm=underline ctermfg=Black ctermfg=Gray ctermbg=black gui=underline guifg=Black guibg=gray
+hi TabLineFill term=reverse cterm=reverse,bold ctermfg=LightGray ctermbg=black gui=reverse,bold guifg=LightGray guibg=black
 
 "unite.vim
 let g:unite_enable_start_insert=1
