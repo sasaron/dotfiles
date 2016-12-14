@@ -147,6 +147,7 @@ function! LightlineFugitive()
     else
         return ''
     endif
+endfunction
 
 function! LightlineFileformat()
     return winwidth(0) > 70 ? &fileformat : ''
