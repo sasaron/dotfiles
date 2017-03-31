@@ -18,7 +18,6 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 if v:version >700
     NeoBundle 'Shougo/unite.vim'
 endif
->>>>>>> remotes/origin/master
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'itchyny/lightline.vim'
 NeoBundle 'fatih/vim-go'
