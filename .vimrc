@@ -16,8 +16,17 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 NeoBundleFetch 'Shougo/neobundle.vim'
 
 NeoBundle 'Shougo/unite.vim'
+NeoBundle 'Shougo/vimfiler' 
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'itchyny/lightline.vim'
+NeoBundle 'fatih/vim-go'
+NeoBundle 'vim-jp/vim-go-extra'
+NeoBundle 'petdance/vim-perl'
+NeoBundle 'hotchpotch/perldoc-vim'
+NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'Shougo/neosnippet'
+NeoBundle 'Shougo/neosnippet-snippets'
+NeoBundle 'thinca/vim-quickrun'
 
 call neobundle#end()
 
@@ -58,6 +67,10 @@ set showmatch
 set wildmenu
 " テキスト挿入中の自動折り返しを日本語に対応させる
 set formatoptions+=mM
+" インデントの深さによって折りたたむ
+set foldmethod=indent
+set foldlevel=4
+set foldcolumn=3
 
 "---------------------------------------------------------------------------
 " GUI固有ではない画面表示の設定:
@@ -81,25 +94,38 @@ set cmdheight=2
 " コマンドをステータス行に表示
 set showcmd
 " モードを表示する
-set showmode
+"set showmode
 " 画面のカラースキーマ
 set background=dark
+" ターミナルの背景を適応する
+autocmd ColorScheme * highlight Normal ctermbg=none
+autocmd ColorScheme * highlight LineNr ctermbg=none
 " colorscheme molokai
 colorscheme gruvbox
+" シンタックスハイライト
+syntax on
+" screen 256色対応
+set t_Co=256
 
 "---------------------------------------------------------------------------
 " ファイル操作に関する設定:
 "
 " バックアップファイルを作成しない
-set nobackup
+" set nobackup
 " スワップファイルを作成しない
-set noswapfile
-" シンタックスハイライト
-syntax on
+" set noswapfile
 
-" screen 256色対応
-set t_Co=256
+"---------------------------------------------------------------------------
+" キーバインド
+"
+nnoremap    [unite]   <nop>
+nmap        ,         [unite]
+nnoremap <silent> [unite]b :<C-u>Unite<space>buffer<CR>
+nnoremap <silent> [unite]f :<C-u>Unite<space>file<CR>
 
+"---------------------------------------------------------------------------
+" プラグインに関する設定:
+"
 " colorschemeの設定
 let g:gruvbox_contrast_dark='hard'
 let g:gruvbox_termcolors = 256
@@ -193,8 +219,9 @@ let &tabline = '%!'.s:SID_PREFIX() .'my_tabline()'
 set showtabline=2
 
 hi TabLineSel  term=bold cterm=bold,underline ctermfg=LightGray ctermbg=DarkBlue gui=bold,underline guifg=LightGray guibg=DarkBlue
-hi TabLine term=reverse cterm=underline ctermfg=Black ctermfg=Gray ctermbg=black gui=underline guifg=Black guibg=gray
-hi TabLineFill term=reverse cterm=reverse,bold ctermfg=LightGray ctermbg=black gui=reverse,bold guifg=LightGray guibg=black
+hi TabLine term=reverse cterm=underline ctermfg=Black ctermfg=Gray ctermbg=Black gui=underline guifg=black guibg=gray
+hi TabLineFill term=reverse cterm=reverse,bold ctermfg=LightGray ctermbg=Black gui=reverse,bold guifg=LightGray guibg=black
+hi Normal ctermfg=white
 
 "unite.vim
 let g:unite_enable_start_insert=1
@@ -209,3 +236,43 @@ autocmd BufNewFile,BufRead *.psgi   set filetype=perl
 autocmd BufNewFile,BufRead *.t      set filetype=perl
 autocmd BufNewFile,BufRead *.pm     set filetype=perl
 autocmd BufNewFile,BUfRead *.tt     set filetype=html
+" disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplcache.
+let g:neocomplcache_enable_at_startup = 1
+" Use underbar completion.
+let g:neocomplcache_enable_underbar_completion = 1
+" Set minimum syntax keyword length.
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+
+" Use smartcase.
+let g:neocomplcache_enable_smart_case = 1
+" Use camel case completion.
+let g:neocomplcache_enable_camel_case_completion = 1
+" Select with <TAB>
+inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+
+let g:neocomplcache_ctags_arguments_list = {
+            \ 'perl' : '-R -h ".pm"'
+            \ }
+
+let g:neocomplcache_snippets_dir = "~/.vim/snippets"
+" Define dictionary.
+let g:neocomplcache_dictionary_filetype_lists = {
+            \ 'default'    : '',
+            \ 'perl'       : $HOME . '/.vim/dict/perl.dict'
+            \ }
+
+" Define keyword.
+if !exists('g:neocomplcache_keyword_patterns')
+    let g:neocomplcache_keyword_patterns = {}
+endif
+let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+
+" for snippets
+" Plugin key-mappings.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
