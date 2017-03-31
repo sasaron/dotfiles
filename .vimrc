@@ -15,8 +15,10 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 " Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/vimfiler' 
+if v:version >700
+    NeoBundle 'Shougo/unite.vim'
+endif
+>>>>>>> remotes/origin/master
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'itchyny/lightline.vim'
 NeoBundle 'fatih/vim-go'
@@ -223,14 +225,15 @@ hi TabLine term=reverse cterm=underline ctermfg=Black ctermfg=Gray ctermbg=Black
 hi TabLineFill term=reverse cterm=reverse,bold ctermfg=LightGray ctermbg=Black gui=reverse,bold guifg=LightGray guibg=black
 hi Normal ctermfg=white
 
-"unite.vim
-let g:unite_enable_start_insert=1
-let g:unite_source_history_yank_enable =1
-let g:unite_source_file_mru_limit = 200
-let g:unite_enable_split_vertically = 1
-let g:unite_winwidth = 40
-call unite#custom_default_action('file', 'tabopen')
-
+if v:version > 700
+    "unite.vim
+    let g:unite_enable_start_insert=1
+    let g:unite_source_history_yank_enable =1
+    let g:unite_source_file_mru_limit = 200
+    let g:unite_enable_split_vertically = 1
+    let g:unite_winwidth = 40
+    call unite#custom_default_action('file', 'tabopen')
+endif
 " Perl のための設定
 autocmd BufNewFile,BufRead *.psgi   set filetype=perl
 autocmd BufNewFile,BufRead *.t      set filetype=perl
