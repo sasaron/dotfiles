@@ -1,9 +1,13 @@
-source ~/perl5/perlbrew/etc/bashrc
-export PATH="$HOME/.gem/ruby/2.0.0/bin:$PATH"
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+#PS1="[[\e[36m\]\H@\[\e[33m\]\u::\[\e[31m]\w]$"
+#PS1='[\u@\h \W]\$'
 
-export GOPATH="/usr/local/bin/go"
-export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
+git_branch() {
+  echo $(git branch --no-color 2>/dev/null | sed -ne "s/^\* \(.*\)$/\1/p")
+}
 
-alias ll='ls -laG'
-alias mysql="mysql --pager='less -S -n -i -F'"
-alias lodge_start_dev="cd ~/Documents/lodge/; bin/rake sunspot:solr:start RAILS_ENV=development; bundle exec unicorn -c config/unicorn.rb -E development"
+if [ "$color_prompt" = yes ]; then
+    PS1='\[\033[32m\]\h\[\033[00m\]:\[\033[01;34m\]$(git_branch)\[\033[00m\]:\w\$ '
+else
+    PS1='\h:$(git_branch):\w\$ '
+fi
