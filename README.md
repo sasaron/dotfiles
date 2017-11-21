@@ -1,10 +1,10 @@
-# install xcode 
+step1 install xcode 
 xcode-select --install
-# install brew
+step2 install brew
 ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
-# git
+step3 git
 brew install git
-# git clone dotfile
+step4 git clone dotfile
 git clone https://github.com/sasaki-ryu/dotfiles.git ~/
-# install.sh
+step5 install.sh
 ./dotfile/install.sh
