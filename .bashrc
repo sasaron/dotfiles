@@ -11,3 +11,5 @@ if [ "$color_prompt" = yes ]; then
 else
     PS1='\h:$(git_branch):\w\$ '
 fi
+
+eval "$(direnv hook bash)"
