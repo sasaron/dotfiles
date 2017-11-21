@@ -7,4 +7,4 @@ brew install git
 ## step4 git clone dotfile
 git clone https://github.com/sasaki-ryu/dotfiles.git ~/
 ## step5 install.sh
-./dotfile/install.sh
+~/dotfile/install.sh
