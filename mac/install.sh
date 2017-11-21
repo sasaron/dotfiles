@@ -67,7 +67,7 @@ else
 fi
 
 # setting Brew bundle
-BREW_FILE="$HOME/dotfile/Brewfile"
+BREW_FILE="$HOME/dotfile/mac/Brewfile"
 if [ -e $BREW_FILE ]; then
     cd "$DOTFILE_DIR"
     brew tap Homebrew/bundle
