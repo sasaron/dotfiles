@@ -1,14 +1,10 @@
-export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-#PS1="[[\e[36m\]\H@\[\e[33m\]\u::\[\e[31m]\w]$"
-#PS1='[\u@\h \W]\$'
-
 # get current branch in git repo
 function parse_git_branch() {
 	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
 	if [ ! "${BRANCH}" == "" ]
 	then
 		STAT=`parse_git_dirty`
-		echo "[${BRANCH}${STAT}]"
+		echo "${BRANCH}${STAT}"
 	else
 		echo ""
 	fi
@@ -49,4 +45,6 @@ function parse_git_dirty {
 	fi
 }
 
-export PS1="[\[\e[34m\]\u\[\e[m\]@\[\e[33m\]\H\[\e[m\]][\[\e[32m\]\w\[\e[m\]]\[\e[35m\]\`parse_git_branch\`\[\e[m\]\\n\$ "
+export PS1="[\[\e[34m\]\u\[\e[m\]@\[\e[33m\]\H\[\e[m\]][\[\e[32m\]\w\[\e[m\]][\[\e[35m\]\`parse_git_branch\`\[\e[m\]]\n\$ "
+
+alias ls="ls -G"
