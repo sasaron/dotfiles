@@ -17,14 +17,14 @@ fi
 
 if [ -e "$VIMRC_FILE" ]; then
     echo "$VIMRC_FILE already exitsts! Back up $VIMRC_FILE"
-    ln -sb $DOTVIMRC_FILE $VIMRC_FILE
+    exit 1;
 else
     ln -s $DOTVIMRC_FILE $VIMRC_FILE
 fi
 
 if [ -e "$SCREEN_FILE" ]; then
     echo "$SCREEN_FILE already exitsts! Back up $SCREEN_FILE"
-    ln -sb $DOTSCREEN_FILE $SCREEN_FILE
+    exit 1;
 else
     ln -s $DOTSCREEN_FILE $SCREEN_FILE
 fi
@@ -75,13 +75,13 @@ if [ -e $BREW_FILE ]; then
 fi
 
 # setting git repository file
-ANYENV_FILE="$HOME/.anyenv"
-if ![ -e "$ANYENV_FILE" ]
-    git clone https://github.com/riywo/anyenv ~/.anyenv
-    anyenv install plenv
-    anyenv install pyenv
-    anyenv install rbenv
-    anyenv install phpenv
-    anyenv install ndenv
-    anyenv install goenv
-fi
+# ANYENV_FILE="$HOME/.anyenv"
+# if ![ -e "$ANYENV_FILE" ]
+#     git clone https://github.com/riywo/anyenv ~/.anyenv
+#     anyenv install plenv
+#     anyenv install pyenv
+#     anyenv install rbenv
+#     anyenv install phpenv
+#     anyenv install ndenv
+#     anyenv install goenv
+# fi

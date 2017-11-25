@@ -15,18 +15,20 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 " Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-if v:version >700
-    NeoBundle 'Shougo/unite.vim'
-endif
+"if v:version >700
+"    NeoBundle 'Shougo/unite.vim'
+"endif
 NeoBundle 'morhetz/gruvbox'
 NeoBundle 'itchyny/lightline.vim'
 NeoBundle 'fatih/vim-go'
 NeoBundle 'vim-jp/vim-go-extra'
+NeoBundle 'scrooloose/syntastic'
+NeoBundle 'nsf/gocode', {'rtp': 'nvim/'}
 NeoBundle 'petdance/vim-perl'
 NeoBundle 'hotchpotch/perldoc-vim'
-NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neosnippet'
-NeoBundle 'Shougo/neosnippet-snippets'
+"NeoBundle 'Shougo/neocomplcache'
+"NeoBundle 'Shougo/neosnippet'
+"NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'thinca/vim-quickrun'
 
 call neobundle#end()
@@ -119,10 +121,10 @@ set t_Co=256
 "---------------------------------------------------------------------------
 " キーバインド
 "
-nnoremap    [unite]   <nop>
-nmap        ,         [unite]
-nnoremap <silent> [unite]b :<C-u>Unite<space>buffer<CR>
-nnoremap <silent> [unite]f :<C-u>Unite<space>file<CR>
+"nnoremap    [unite]   <nop>
+"nmap        ,         [unite]
+"nnoremap <silent> [unite]b :<C-u>Unite<space>buffer<CR>
+"nnoremap <silent> [unite]f :<C-u>Unite<space>file<CR>
 
 "---------------------------------------------------------------------------
 " プラグインに関する設定:
@@ -224,53 +226,53 @@ hi TabLine term=reverse cterm=underline ctermfg=Black ctermfg=Gray ctermbg=Black
 hi TabLineFill term=reverse cterm=reverse,bold ctermfg=LightGray ctermbg=Black gui=reverse,bold guifg=LightGray guibg=black
 hi Normal ctermfg=white
 
-if v:version > 700
-    "unite.vim
-    let g:unite_enable_start_insert=1
-    let g:unite_source_history_yank_enable =1
-    let g:unite_source_file_mru_limit = 200
-    let g:unite_enable_split_vertically = 1
-    let g:unite_winwidth = 40
-    call unite#custom_default_action('file', 'tabopen')
-endif
+"if v:version > 700
+"    "unite.vim
+"    let g:unite_enable_start_insert=1
+"    let g:unite_source_history_yank_enable =1
+"    let g:unite_source_file_mru_limit = 200
+"    let g:unite_enable_split_vertically = 1
+"    let g:unite_winwidth = 40
+"    call unite#custom_default_action('file', 'tabopen')
+"endif
 " Perl のための設定
 autocmd BufNewFile,BufRead *.psgi   set filetype=perl
 autocmd BufNewFile,BufRead *.t      set filetype=perl
 autocmd BufNewFile,BufRead *.pm     set filetype=perl
 autocmd BufNewFile,BUfRead *.tt     set filetype=html
-" disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplcache.
-let g:neocomplcache_enable_at_startup = 1
-" Use underbar completion.
-let g:neocomplcache_enable_underbar_completion = 1
-" Set minimum syntax keyword length.
-let g:neocomplcache_min_syntax_length = 3
-let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-
-" Use smartcase.
-let g:neocomplcache_enable_smart_case = 1
-" Use camel case completion.
-let g:neocomplcache_enable_camel_case_completion = 1
-" Select with <TAB>
-inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-
-let g:neocomplcache_ctags_arguments_list = {
-            \ 'perl' : '-R -h ".pm"'
-            \ }
-
-let g:neocomplcache_snippets_dir = "~/.vim/snippets"
-" Define dictionary.
-let g:neocomplcache_dictionary_filetype_lists = {
-            \ 'default'    : '',
-            \ 'perl'       : $HOME . '/.vim/dict/perl.dict'
-            \ }
-
-" Define keyword.
-if !exists('g:neocomplcache_keyword_patterns')
-    let g:neocomplcache_keyword_patterns = {}
-endif
-let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+"" disable AutoComplPop.
+"let g:acp_enableAtStartup = 0
+"" Use neocomplcache.
+"let g:neocomplcache_enable_at_startup = 1
+"" Use underbar completion.
+"let g:neocomplcache_enable_underbar_completion = 1
+"" Set minimum syntax keyword length.
+"let g:neocomplcache_min_syntax_length = 3
+"let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+"
+"" Use smartcase.
+"let g:neocomplcache_enable_smart_case = 1
+"" Use camel case completion.
+"let g:neocomplcache_enable_camel_case_completion = 1
+"" Select with <TAB>
+"inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+"
+"let g:neocomplcache_ctags_arguments_list = {
+"            \ 'perl' : '-R -h ".pm"'
+"            \ }
+"
+"let g:neocomplcache_snippets_dir = "~/.vim/snippets"
+"" Define dictionary.
+"let g:neocomplcache_dictionary_filetype_lists = {
+"            \ 'default'    : '',
+"            \ 'perl'       : $HOME . '/.vim/dict/perl.dict'
+"            \ }
+"
+"" Define keyword.
+"if !exists('g:neocomplcache_keyword_patterns')
+"    let g:neocomplcache_keyword_patterns = {}
+"endif
+"let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 " for snippets
 " Plugin key-mappings.
@@ -278,3 +280,13 @@ let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" go-linterとsyntasticの設定 goのチェック
+let g:syntastic_mode_map = { 'mode': 'passive',
+    \ 'active_filetypes': ['go'] }
+let g:syntastic_go_checkers = ['go', 'golint']
+
+" Go言語設定
+let g:go_fmt_command = "goimports"
+let g:go_auto_sameids = 1
+let g:go_gocode_unimported_packages = 1
