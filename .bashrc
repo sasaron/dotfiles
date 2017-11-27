@@ -48,3 +48,7 @@ function parse_git_dirty {
 export PS1="[\[\e[34m\]\u\[\e[m\]@\[\e[33m\]\H\[\e[m\]][\[\e[32m\]\w\[\e[m\]][\[\e[35m\]\`parse_git_branch\`\[\e[m\]]\n\$ "
 
 alias ls="ls -G"
+alias ll="ls -laG"
+alias dirs="dirs -v"
+alias init="$SHELL -l"
+export EDITOR=vim

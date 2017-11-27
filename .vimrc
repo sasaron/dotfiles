@@ -25,11 +25,17 @@ NeoBundle 'vim-jp/vim-go-extra'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'nsf/gocode', {'rtp': 'nvim/'}
 NeoBundle 'petdance/vim-perl'
-NeoBundle 'hotchpotch/perldoc-vim'
+"NeoBundle 'hotchpotch/perldoc-vim'
 "NeoBundle 'Shougo/neocomplcache'
 "NeoBundle 'Shougo/neosnippet'
 "NeoBundle 'Shougo/neosnippet-snippets'
-NeoBundle 'thinca/vim-quickrun'
+"NeoBundle 'thinca/vim-quickrun'
+NeoBundle 'mattn/emmet-vim'
+NeoBundle 'pangloss/vim-javascript'
+NeoBundle 'othree/html5.vim'
+NeoBundle 'hail2u/vim-css3-syntax'
+NeoBundle 'jelera/vim-javascript-syntax'
+NeoBundle 'hokaccha/vim-html5validator'
 
 call neobundle#end()
 
