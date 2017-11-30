@@ -91,11 +91,25 @@ set number
 " ルーラーを表示 (noruler:非表示)
 set ruler
 " タブや改行を表示 (list:表示)
-set nolist
+set list
 " どの文字でタブや改行を表示するかを設定
-set listchars=tab:>-,extends:<,trail:-,eol:<
+" set listchars=tab:>-,extends:<,trail:-,eol:<
+set listchars=tab:>.,trail:_,eol:↲,extends:>,precedes:<,nbsp:%
+" 全角スペースをハイライト
+function! ZenkakuSpace()
+    highlight ZenkakuSpace cterm=reverse ctermfg=DarkMagenta gui=reverse guifg=DarkMagenta
+endfunction
+
+if has('syntax')
+    augroup ZenkakuSpace
+        autocmd!
+        autocmd ColorScheme       * call ZenkakuSpace()
+        autocmd VimEnter,WinEnter * match ZenkakuSpace /　/
+    augroup END
+    call ZenkakuSpace()
+endif
 " 長い行を折り返して表示 (nowrap:折り返さない)
-set nowrap
+set wrap
 " 常にステータス行を表示 (詳細は:he laststatus)
 set laststatus=2
 " コマンドラインの高さ
@@ -120,7 +134,7 @@ set t_Co=256
 " ファイル操作に関する設定:
 "
 " バックアップファイルを作成しない
-" set nobackup
+set nobackup
 " スワップファイルを作成しない
 " set noswapfile
 
