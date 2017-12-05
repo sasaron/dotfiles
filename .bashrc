@@ -45,11 +45,17 @@ function parse_git_dirty {
     fi
 }
 
+function git-root() {
+  if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    cd `pwd`/`git rev-parse --show-cdup`
+  fi
+}
+
 export PS1="[\[\e[34m\]\u\[\e[m\]@\[\e[33m\]\H\[\e[m\]][\[\e[32m\]\w\[\e[m\]][\[\e[35m\]\`parse_git_branch\`\[\e[m\]]\n\$ "
 
 alias ls="ls -G"
 alias ll="ls -laG"
 alias dirs="dirs -v"
 alias rm="rm -i"
-alias dockerrmALL="docker rm $(docker ps -aq)"
+#alias dockerrmALL="docker rm $(docker ps -aq)
 export EDITOR=vim
