@@ -1,3 +1,8 @@
+export HISTTIMEFORMAT='%Y-%m-%dT%T%z '
+export HISTFILESIZE=1000
+export HISTCONTROL=erasedups
+export HISTIGNORE=?:??:exit:history:ls*:pwd:cd*
+
 # get current branch in git repo
 function parse_git_branch() {
 BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
@@ -57,5 +62,6 @@ alias ls="ls -G"
 alias ll="ls -laG"
 alias dirs="dirs -v"
 alias rm="rm -i"
+#alias g='cd $(ghq root)/$(ghq list | peco)'
 #alias dockerrmALL="docker rm $(docker ps -aq)
 export EDITOR=vim
