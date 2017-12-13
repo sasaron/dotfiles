@@ -56,12 +56,78 @@ function git-root() {
   fi
 }
 
+function vif() {
+    if [ ! -e "$1" ]; then
+        return 1
+    fi
+    local file=`find $1 -type f | perl -nle 'print if -f && -T' | peco`
+    if [ -n "$file" ]; then
+        echo "vim $file" >> ~/.bash_history
+        vim $file
+    fi
+}
+
+git_branch() {
+    # 変更を退避
+    local unstaged_commit=`git status | grep 'Changes not staged for commit'`
+    if [ -n "$unstaged_commit" ];then
+        echo "saved unstaged commit"
+        git stash save
+    fi
+
+    git checkout `git branch | peco | sed -e "s/\* //g" | awk "{print \$1}"`
+
+    # 変更を戻す
+    local branch=`git rev-parse --abbrev-ref HEAD`
+    local saved_stash=`git stash list | grep $branch`
+    if [ -n "$saved_stash" ];then
+        echo "restore stash"
+        git stash pop
+    fi
+}
+
+pcap() {
+    local TARGET=$1
+    TARGET=`echo "$TARGET" | grep -E '(stage|production)'`
+    if [ -z "$TARGET" ]; then
+        echo "Usage: pcap [stage or production]"
+        return 1
+    fi
+
+    VERSION=""
+    if [ "$TARGET" == "production" ]; then
+        git pull --tags > /dev/null 2>&1
+        TAG=`git for-each-ref --sort=-taggerdate --format='%(taggerdate:short) %(tag) %(taggername) %(subject)' refs/tags | head -n 10 | peco | perl -anle 'print $F[1]'`
+        if [ -z "$TAG" ]; then
+            return 1
+        fi
+        APP=`echo $TAG | grep -o -E '(admin|batch)'`
+        VERSION="-Stag=$TAG"
+    elif [ "$TARGET" == "stage" ]; then
+        BRANCH=`git branch | peco | sed -e "s/\* //g"`
+        APP="admin"
+        VERSION="-Sbranch=$BRANCH"
+    fi
+
+    CATAPP=""
+    if [ -n "$APP" ]; then
+        CATAPP="CATAPP=$APP"
+    fi
+
+    echo "cap $VERSION $CATAPP TARGET=$TARGET deploy"
+}
+
+hiscopy() {
+    history | perl -anle 'print "@F[ 1..$#F ]"' | peco | perl -ne 's/\n$//g;print' | pbcopy
+}
+
 export PS1="[\[\e[34m\]\u\[\e[m\]@\[\e[33m\]\H\[\e[m\]][\[\e[32m\]\w\[\e[m\]][\[\e[35m\]\`parse_git_branch\`\[\e[m\]]\n\$ "
 
 alias ls="ls -G"
 alias ll="ls -laG"
 alias dirs="dirs -v"
 alias rm="rm -i"
-#alias g='cd $(ghq root)/$(ghq list | peco)'
+alias g='cd $(ghq root)/$(ghq list | peco)'
+alias mysql="mysql --pager='less -S -n -i -F -X'"
 #alias dockerrmALL="docker rm $(docker ps -aq)
 export EDITOR=vim

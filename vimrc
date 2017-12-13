@@ -30,12 +30,12 @@ NeoBundle 'petdance/vim-perl'
 "NeoBundle 'Shougo/neosnippet'
 "NeoBundle 'Shougo/neosnippet-snippets'
 "NeoBundle 'thinca/vim-quickrun'
-NeoBundle 'mattn/emmet-vim'
-NeoBundle 'pangloss/vim-javascript'
-NeoBundle 'othree/html5.vim'
-NeoBundle 'hail2u/vim-css3-syntax'
-NeoBundle 'jelera/vim-javascript-syntax'
-NeoBundle 'hokaccha/vim-html5validator'
+"NeoBundle 'mattn/emmet-vim'
+"NeoBundle 'pangloss/vim-javascript'
+"NeoBundle 'othree/html5.vim'
+"NeoBundle 'hail2u/vim-css3-syntax'
+"NeoBundle 'jelera/vim-javascript-syntax'
+"NeoBundle 'hokaccha/vim-html5validator'
 
 call neobundle#end()
 
@@ -310,3 +310,4 @@ let g:syntastic_go_checkers = ['go', 'golint']
 let g:go_fmt_command = "goimports"
 let g:go_auto_sameids = 1
 let g:go_gocode_unimported_packages = 1
+let g:go_version_warning = 0
