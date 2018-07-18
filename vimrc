@@ -1,48 +1,38 @@
-" Note: Skip initialization for vim-tiny or vim-small.
-if 0 | endif
+filetype plugin indent off
 
 if &compatible
-    set nocompatible               " Be iMproved
+  set nocompatible
 endif
 
-" Required:
-set runtimepath+=~/.vim/bundle/neobundle.vim/
+set runtimepath+=~/.vim/dein/repos/github.com/Shougo/dein.vim
 
-" Required:
-call neobundle#begin(expand('~/.vim/bundle/'))
+call dein#begin(expand('~/.vim/dein'))
 
-" Let NeoBundle manage NeoBundle
-" Required:
-NeoBundleFetch 'Shougo/neobundle.vim'
+call dein#add('morhetz/gruvbox')
+call dein#add('itchyny/lightline.vim')
+call dein#add('fatih/vim-go')
+call dein#add('vim-jp/vim-go-extra')
+call dein#add('scrooloose/syntastic')
+call dein#add('nsf/gocode', {'rtp': 'nvim/'})
+"call dein#add('petdance/vim-perl')
+call dein#add('tpope/vim-fugitive')
+call dein#add('soramugi/auto-ctags.vim')
+"call dein#add('hotchpotch/perldoc-vim')
+"call dein#add('Shougo/neocomplcache')
+"call dein#add('Shougo/neosnippet')
+"call dein#add('Shougo/neosnippet-snippets')
+"call dein#add('thinca/vim-quickrun')
+"call dein#add('mattn/emmet-vim')
+"call dein#add('pangloss/vim-javascript')
+"call dein#add('othree/html5.vim')
+"call dein#add('hail2u/vim-css3-syntax')
+"call dein#add('jelera/vim-javascript-syntax')
+"call dein#add('hokaccha/vim-html5validator')
 
-"if v:version >700
-"    NeoBundle 'Shougo/unite.vim'
-"endif
-NeoBundle 'morhetz/gruvbox'
-NeoBundle 'itchyny/lightline.vim'
-NeoBundle 'fatih/vim-go'
-NeoBundle 'vim-jp/vim-go-extra'
-NeoBundle 'scrooloose/syntastic'
-NeoBundle 'nsf/gocode', {'rtp': 'nvim/'}
-NeoBundle 'petdance/vim-perl'
-"NeoBundle 'hotchpotch/perldoc-vim'
-"NeoBundle 'Shougo/neocomplcache'
-"NeoBundle 'Shougo/neosnippet'
-"NeoBundle 'Shougo/neosnippet-snippets'
-"NeoBundle 'thinca/vim-quickrun'
-"NeoBundle 'mattn/emmet-vim'
-"NeoBundle 'pangloss/vim-javascript'
-"NeoBundle 'othree/html5.vim'
-"NeoBundle 'hail2u/vim-css3-syntax'
-"NeoBundle 'jelera/vim-javascript-syntax'
-"NeoBundle 'hokaccha/vim-html5validator'
-
-call neobundle#end()
+call dein#end()
 
 " Required:
 filetype plugin indent on
-
-NeoBundleCheck
 
 " 大文字小文字のみの場合大文字小文字を無視
 set ignorecase
@@ -52,6 +42,8 @@ set smartcase
 set incsearch
 " 検索ハイライト
 set hlsearch
+" 選択範囲をクリップボードにコピー
+set clipboard+=unnamed
 
 "---------------------------------------------------------------------------
 " 編集に関する設定:
@@ -80,7 +72,6 @@ set formatoptions+=mM
 set foldmethod=indent
 set foldlevel=4
 set foldcolumn=3
-
 "---------------------------------------------------------------------------
 " GUI固有ではない画面表示の設定:
 "
@@ -153,153 +144,82 @@ set nobackup
 let g:gruvbox_contrast_dark='hard'
 let g:gruvbox_termcolors = 256
 set laststatus=2
-
-" lightlineの設定
 let g:lightline = {
-            \ 'colorscheme': 'jellybeans',
-            \ 'mode_map': {'c': 'NORMAL'},
-            \ 'active': {
-            \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ]
-            \ },
-            \ 'component_function': {
-            \   'modified': 'LightlineModified',
-            \   'readonly': 'LightlineReadonly',
-            \   'fugitive': 'LightlineFugitive',
-            \   'filename': 'LightlineFilename',
-            \   'fileformat': 'LightlineFileformat',
-            \   'filetype': 'LightlineFiletype',
-            \   'fileencoding': 'LightlineFileencoding',
-            \   'mode': 'LightlineMode'
-            \ }
-            \ }
+      \ 'colorscheme': 'gruvbox',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'fugitive', 'filename' ] ]
+      \ },
+      \ 'component_function': {
+      \   'readonly': 'LightlineReadonly',
+      \   'modified': 'LightlineModified',
+      \   'fugitive': 'LightlineFugitive',
+      \   'filename': 'LightlineFilename'
+      \ },
+      \ 'separator': { 'left': '', 'right': '' },
+      \ 'subseparator': { 'left': '|', 'right': '|' }
+      \ }
 
 function! LightlineModified()
-    return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+  if &filetype == 'help'
+    return ''
+  elseif &modified
+    return '+'
+  elseif &modifiable
+    return ''
+  else
+    return '-'
+  endif
 endfunction
 
 function! LightlineReadonly()
-    return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'x' : ''
-endfunction
-
-function! LightlineFilename()
-    return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
-                \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
-                \  &ft == 'unite' ? unite#get_status_string() :
-                \  &ft == 'vimshell' ? vimshell#get_status_string() :
-                \ '' != expand('%:t') ? expand('%:t') : '[No Name]') .
-                \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
+  if &filetype == 'help'
+    return ''
+  elseif &readonly
+    return 'x'
+  else
+    return ''
+  endif
 endfunction
 
 function! LightlineFugitive()
-    if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
-        return fugitive#head()
-    else
-        return ''
-    endif
+  return exists('*fugitive#head') ? fugitive#head() : ''
 endfunction
 
-function! LightlineFileformat()
-    return winwidth(0) > 70 ? &fileformat : ''
+function! LightlineFilename()
+  return ('' != LightlineReadonly() ? LightlineReadonly() . ' ' : '') .
+       \ ('' != expand('%:t') ? expand('%:t') : '[No Name]') .
+       \ ('' != LightlineModified() ? ' ' . LightlineModified() : '')
 endfunction
 
-function! LightlineFiletype()
-    return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
+let g:lightline.tab = {
+      \ 'active': [ 'tabnum', 'filename', 'modified' ],
+      \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
+      \ }
+
+let g:lightline.tab_component_function = {
+      \ 'filename': 'LightlineTabFilename',
+      \ 'modified': 'lightline#tab#modified',
+      \ 'readonly': 'lightline#tab#readonly',
+      \ 'tabnum': 'lightline#tab#tabnum' }
+
+function! LightlineTabFilename(n) abort
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  let _ = pathshorten(expand('#'.buflist[winnr - 1].':f'))
+  return _ !=# '' ? _ : '[No Name]'
 endfunction
 
-function! LightlineFileencoding()
-    return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
-endfunction
-
-function! LightlineMode()
-    return winwidth(0) > 60 ? lightline#mode() : ''
-endfunction
-
-" Anywhere SID.
-function! s:SID_PREFIX()
-    return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
-endfunction
-
-" Set tabline.
-function! s:my_tabline()  "{{{
-    let s = ''
-    for i in range(1, tabpagenr('$'))
-        let bufnrs = tabpagebuflist(i)
-        let bufnr = bufnrs[tabpagewinnr(i) - 1]  " first window, firstappears
-        let no = i  " display 0-origin tabpagenr.
-        let mod = getbufvar(bufnr, '&modified') ? '!' : ' '
-        let title = fnamemodify(bufname(bufnr), ':t')
-        let title = '[' . title . ']'
-        let s .= '%'.i.'T'
-        let s .= '%#' . (i == tabpagenr() ?'TabLineSel' : 'TabLine') . '#'
-        let s .= no . ':' . title
-        let s .= mod
-        let s .= '%#TabLineFill# '
-    endfor
-    let s .='%#TabLineFill#%T%=%#TabLine#'
-    return s
-endfunction "}}}
-let &tabline = '%!'.s:SID_PREFIX() .'my_tabline()'
+" 常にtabを表示
 set showtabline=2
-
-hi TabLineSel  term=bold cterm=bold,underline ctermfg=LightGray ctermbg=DarkBlue gui=bold,underline guifg=LightGray guibg=DarkBlue
-hi TabLine term=reverse cterm=underline ctermfg=Black ctermfg=Gray ctermbg=Black gui=underline guifg=black guibg=gray
-hi TabLineFill term=reverse cterm=reverse,bold ctermfg=LightGray ctermbg=Black gui=reverse,bold guifg=LightGray guibg=black
+set tabline=%!MyTabLine()
 hi Normal ctermfg=white
 
-"if v:version > 700
-"    "unite.vim
-"    let g:unite_enable_start_insert=1
-"    let g:unite_source_history_yank_enable =1
-"    let g:unite_source_file_mru_limit = 200
-"    let g:unite_enable_split_vertically = 1
-"    let g:unite_winwidth = 40
-"    call unite#custom_default_action('file', 'tabopen')
-"endif
 " Perl のための設定
 autocmd BufNewFile,BufRead *.psgi   set filetype=perl
 autocmd BufNewFile,BufRead *.t      set filetype=perl
 autocmd BufNewFile,BufRead *.pm     set filetype=perl
 autocmd BufNewFile,BUfRead *.tt     set filetype=html
-"" disable AutoComplPop.
-"let g:acp_enableAtStartup = 0
-"" Use neocomplcache.
-"let g:neocomplcache_enable_at_startup = 1
-"" Use underbar completion.
-"let g:neocomplcache_enable_underbar_completion = 1
-"" Set minimum syntax keyword length.
-"let g:neocomplcache_min_syntax_length = 3
-"let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-"
-"" Use smartcase.
-"let g:neocomplcache_enable_smart_case = 1
-"" Use camel case completion.
-"let g:neocomplcache_enable_camel_case_completion = 1
-"" Select with <TAB>
-"inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-"
-"let g:neocomplcache_ctags_arguments_list = {
-"            \ 'perl' : '-R -h ".pm"'
-"            \ }
-"
-"let g:neocomplcache_snippets_dir = "~/.vim/snippets"
-"" Define dictionary.
-"let g:neocomplcache_dictionary_filetype_lists = {
-"            \ 'default'    : '',
-"            \ 'perl'       : $HOME . '/.vim/dict/perl.dict'
-"            \ }
-"
-"" Define keyword.
-"if !exists('g:neocomplcache_keyword_patterns')
-"    let g:neocomplcache_keyword_patterns = {}
-"endif
-"let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-
-" for snippets
-" Plugin key-mappings.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
 
 " go-linterとsyntasticの設定 goのチェック
 let g:syntastic_mode_map = { 'mode': 'passive',
@@ -311,3 +231,14 @@ let g:go_fmt_command = "goimports"
 let g:go_auto_sameids = 1
 let g:go_gocode_unimported_packages = 1
 let g:go_version_warning = 0
+
+
+"ctags設定
+set tags+=.git/tags
+autocmd BufWritePost *
+      \ if exists('b:git_dir') && executable(b:git_dir.'/hooks/ctags') |
+      \   call system('"'.b:git_dir.'/hooks/ctags" &') |
+      \ endif
+
+nnoremap <F3> :<C-u>tab stj <C-R>=expand('<cword>')<CR><CR>
+nnoremap <C-]> g<C-]>
