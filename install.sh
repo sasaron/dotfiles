@@ -1,27 +1,30 @@
 #!/bin/sh
-DOTFILEDIR="/src/github.com/sasaki-ryu/dotfiles.git"
+DOTFILEDIR="$HOME/src/github.com/sasaki-ryu/dotfiles.git"
 
 if [ "$(uname)" != 'Darwin' ]; then
     exit 1;
 fi
 
-mkdir -p $HOME/$DOOTFILEDIR
+mkdir -p $DOOTFILEDIR
 xcode-select --install
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install git
-git clone https://github.com/sasaki-ryu/dotfiles.git $HOME/$DOTFILEDIR
+git clone https://github.com/sasaki-ryu/dotfiles.git $DOTFILEDIR
 
-if [ -d $HOME/$DOTFILEDIR/mac -a -f $HOME/$DOTFILEDIR/mac/Brewfile ]; then
-    brew bundle --file=$HOME/$DOTFILEDIR/mac/Brewfile
+if [ -d $DOTFILEDIR/mac -a -f $DOTFILEDIR/mac/Brewfile ]; then
+    brew bundle --file=$DOTFILEDIR/mac/Brewfile
 else
-    echo "not found $HOME/$DOTFILEDIR/mac/Brewfile"
+    echo "not found $DOTFILEDIR/mac/Brewfile"
 fi
 
-if [ -f $HOME/$DOTFILEDIR/vimrc ]; then
-    ln -s $HOME/$DOTFILEDIR/vimrc $HOME/.vimrc
+if [ -f $DOTFILEDIR/vimrc ]; then
+    ln -s $DOTFILEDIR/vimrc $HOME/.vimrc
 fi
-if [ -f $HOME/$DOTFILEDIR/bashrc ]; then
-    ln -s $HOME/$DOTFILEDIR/bashrc $HOME/.bashrc
+if [ -d $DOTFILEDIR/bin ]; then
+    ln -s $DOTFILEDIR/bin $HOME/bin
+fi
+if [ -f $DOTFILEDIR/bashrc ]; then
+    ln -s $DOTFILEDIR/bashrc $HOME/.bashrc
 fi
 
 if [ type "ghq" > /dev/null 2>&1 ]; then

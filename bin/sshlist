@@ -1,0 +1,5 @@
+#!/bin/bash
+
+SSH_CONFIG=$HOME/.ssh/config
+
+ssh $(grep "^Host" $SSH_CONFIG | sed s/"^Host "// | grep -v "^\*$"| peco)
