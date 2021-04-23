@@ -1,0 +1,76 @@
+#!/bin/bash
+mode='all'
+whitelist=''
+
+helpdoc () {
+    cat << EOS
+chromeblock ChromeBlackList
+
+  As a Chrome Enterprise administrator, you can block and allow URLs so that users can only visit certain websites. Restricting users’ internet access can increase productivity and protect your organization from viruses and malicious content found on some websites.
+
+  Use the blocklist and allowlist for basic URL management. If you need stronger filtering, use a content-filtering, web-proxy server or extension.
+
+=============
+Synopsis
+chromeblock [mode] [exclude]
+
+mode(string)
+----
+allow values
+(video,sns,media,help,clear)
+default all
+
+exclude(list)
+----
+allow value
+[url]
+default ""
+
+EOS
+
+}
+
+if [ $# -lt 1 ]; then
+    echo 'default options'
+else
+    mode=$1
+    shift
+fi
+
+if [ ${mode} != 'help' -a ${mode} != 'clear' ]; then
+    for url; do
+        whitelist="${whitelist} ${url}"
+    done
+fi
+
+if [ ${mode} != 'all' -a ${mode} != 'video' -a ${mode} != 'media' -a ${mode} != 'help' -a ${mode} != 'clear' ]; then
+    echo 'argument command: Invalid choice, valid choices are: all, video, media, help, clear'
+    helpdoc
+    exit 1;
+fi
+
+
+echo "mode: ${mode}"
+echo "exclude: ${whitelist}"
+
+case ${mode} in
+    'all' )
+        blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp" "sports.yahoo.co.jp/livestream/pllive/npb" "facebook.com" "twitter.com" "yahoo.co.jp" "amazon.co.jp"'
+        ;;
+    'video' )
+        blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp" "sports.yahoo.co.jp/livestream/pllive/npb"'
+        ;;
+    'media' )
+        blocklist='"facebook.com" "twitter.com" "yahoo.co.jp" "amazon.co.jp"'
+        ;;
+    'clear' )
+        blocklist=''
+        ;;
+    'help' )
+        helpdoc
+        exit 0
+        ;;
+esac
+
+defaults write com.google.Chrome URLBlacklist -array ${blocklist}
+defaults write com.google.Chrome URLWhitelist -array ${whitelist}
