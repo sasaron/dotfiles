@@ -1,8 +1,9 @@
 #!/bin/bash
 mode='all'
 whitelist=''
+passfile="/Users/sasakiry/Documents/key/chromepassword.txt"
 
-helpdoc () {
+function helpdoc () {
     cat << EOS
 chromeblock ChromeBlackList
 
@@ -55,22 +56,40 @@ echo "exclude: ${whitelist}"
 
 case ${mode} in
     'all' )
-        blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp" "sports.yahoo.co.jp/livestream/pllive/npb" "facebook.com" "twitter.com" "yahoo.co.jp" "amazon.co.jp"'
+        blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp" "sports.yahoo.co.jp/livestream/pllive/npb" "facebook.com" "twitter.com" "yahoo.co.jp" "amazon.co.jp" "blog.livedoor.jp"'
         ;;
     'video' )
         blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp" "sports.yahoo.co.jp/livestream/pllive/npb"'
         ;;
     'media' )
-        blocklist='"facebook.com" "twitter.com" "yahoo.co.jp" "amazon.co.jp"'
+        blocklist='"facebook.com" "twitter.com" "yahoo.co.jp" "amazon.co.jp" "blog.livedoor.jp"'
         ;;
     'clear' )
-        blocklist=''
+        echo -n "password:"
+        read -s plain_password
+        echo ""
+        if [ -n $plain_password ] ; then
+            password=$(echo $plain_password | sha512sum)
+            key=$(cat $passfile )
+            if [ "$password"=="$key" ]; then
+                echo "Success!"
+                blocklist=''
+            else
+                echo "password is incorrect!!"
+                exit 1;
+            fi
+        else
+            echo "password is empty"
+            exit 1;
+        fi
         ;;
     'help' )
         helpdoc
         exit 0
         ;;
 esac
+
+
 
 defaults write com.google.Chrome URLBlacklist -array ${blocklist}
 defaults write com.google.Chrome URLWhitelist -array ${whitelist}
