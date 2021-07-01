@@ -50,7 +50,6 @@ if [ ${mode} != 'all' -a ${mode} != 'video' -a ${mode} != 'media' -a ${mode} != 
     exit 1;
 fi
 
-
 echo "mode: ${mode}"
 echo "exclude: ${whitelist}"
 # password
@@ -73,13 +72,13 @@ fi
 
 case ${mode} in
     'all' )
-        blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp" "sports.yahoo.co.jp/livestream/pllive/npb" "facebook.com" "twitter.com" "yahoo.co.jp" "amazon.co.jp" "blog.livedoor.jp"'
+        blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp" "twitter.com" "yahoo.co.jp" "amazon.co.jp" "blog.livedoor.jp" "syosetu.com" "game8.jp" "homes.co.jp" "blog.jp" "nikkansports.com"'
         ;;
     'video' )
-        blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp" "sports.yahoo.co.jp/livestream/pllive/npb"'
+        blocklist='"youtube.com" "abema.tv" "netflix.com" "amazon.co.jp/Amazon-Video" "dazn.com" "tver.jp"'
         ;;
     'media' )
-        blocklist='"facebook.com" "twitter.com" "yahoo.co.jp" "amazon.co.jp" "blog.livedoor.jp"'
+        blocklist='"twitter.com" "yahoo.co.jp" "amazon.co.jp" "blog.livedoor.jp" "syosetu.com" "game8.jp" "homes.co.jp" "blog.jp" "nikkansports.com"'
         ;;
     'clear' )
         blocklist=''
