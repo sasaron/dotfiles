@@ -1,35 +1,15 @@
 filetype plugin indent off
 
 if &compatible
-  set nocompatible
+  set nocompatible               " Be iMproved
 endif
 
-set runtimepath+=$HOME/.vim/dein.vim
-
-call dein#begin(expand('~/.vim/dein'))
-
-call dein#add('morhetz/gruvbox')
-call dein#add('itchyny/lightline.vim')
-call dein#add('fatih/vim-go')
-call dein#add('vim-jp/vim-go-extra')
-call dein#add('scrooloose/syntastic')
-call dein#add('nsf/gocode', {'rtp': 'nvim/'})
-"call dein#add('petdance/vim-perl')
-call dein#add('tpope/vim-fugitive')
-call dein#add('soramugi/auto-ctags.vim')
-"call dein#add('hotchpotch/perldoc-vim')
-"call dein#add('Shougo/neocomplcache')
-"call dein#add('Shougo/neosnippet')
-"call dein#add('Shougo/neosnippet-snippets')
-"call dein#add('thinca/vim-quickrun')
-"call dein#add('mattn/emmet-vim')
-"call dein#add('pangloss/vim-javascript')
-"call dein#add('othree/html5.vim')
-"call dein#add('hail2u/vim-css3-syntax')
-"call dein#add('jelera/vim-javascript-syntax')
-"call dein#add('hokaccha/vim-html5validator')
-
-call dein#end()
+packadd! morhetz/gruvbox
+packadd! itchyny/lightline.vim
+packadd! vim-syntastic/syntastic
+packadd! tpope/vim-fugitive
+packadd! soramugi/auto-ctags.vim
+packadd! w0rp/ale
 
 " Required:
 filetype plugin indent on
@@ -72,6 +52,8 @@ set formatoptions+=mM
 set foldmethod=indent
 set foldlevel=4
 set foldcolumn=3
+" viminfoを表示しない
+set viminfo=
 "---------------------------------------------------------------------------
 " GUI固有ではない画面表示の設定:
 "
@@ -215,12 +197,6 @@ set showtabline=2
 set tabline=%!MyTabLine()
 hi Normal ctermfg=white
 
-" Perl のための設定
-autocmd BufNewFile,BufRead *.psgi   set filetype=perl
-autocmd BufNewFile,BufRead *.t      set filetype=perl
-autocmd BufNewFile,BufRead *.pm     set filetype=perl
-autocmd BufNewFile,BUfRead *.tt     set filetype=html
-
 " go-linterとsyntasticの設定 goのチェック
 let g:syntastic_mode_map = { 'mode': 'passive',
     \ 'active_filetypes': ['go'] }
@@ -232,6 +208,12 @@ let g:go_auto_sameids = 1
 let g:go_gocode_unimported_packages = 1
 let g:go_version_warning = 0
 
+" ale 言語解析エンジン
+let g:ale_fixers = {
+\  '*': ['remove_trailing_lines', 'trim_whitespace'],
+\  'javascript': ['eslint'],
+\}
+let g:ale_fix_on_save = 1
 
 "ctags設定
 set tags+=.git/tags
@@ -240,5 +222,11 @@ autocmd BufWritePost *
       \   call system('"'.b:git_dir.'/hooks/ctags" &') |
       \ endif
 
-nnoremap <F3> :<C-u>tab stj <C-R>=expand('<cword>')<CR><CR>
 nnoremap <C-]> g<C-]>
+inoremap <C-]> <ESC>g<C-]>
+nnoremap <silent><Leader><C-]> <C-w><C-]><C-w>T
+nnoremap <C-]> :tab sp<CR> :exe("tjump ".expand('<cword>'))<CR>
+
+
+set encoding=utf-8
+set fileencodings=utf-8
