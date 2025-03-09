@@ -82,6 +82,10 @@ source $ZSH/oh-my-zsh.sh
 # 日本語を使用
 export LANG=ja_JP.UTF-8
 
+# 色を使用
+autoload -Uz colors
+colors
+
 # Path settings
 if [ -d "$HOME/bin" ]; then
     PATH=$PATH:$HOME/bin
@@ -101,6 +105,51 @@ SAVEHIST=1000
 export HISTTIMEFORMAT='%Y-%m-%dT%T%z '
 export HISTCONTROL=erasedups
 export HISTIGNORE=?:??:exit:history:ls*:pwd:cd*
+
+# コマンドミスを修正
+setopt correct
+
+# 補完の選択を楽にする
+zstyle ':completion:*' menu select
+
+# 補完候補をできるだけ詰めて表示する
+setopt list_packed
+
+# Git settings from config/.zshrc
+autoload -Uz vcs_info
+setopt prompt_subst
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' unstagedstr "%F{red}+"
+zstyle ':vcs_info:git:*' stagedstr "%F{yellow}!"
+zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
+zstyle ':vcs_info:*' formats "[%F{magenta}%b%c%u%f]"
+zstyle ':vcs_info:*' actionformats '[%b|%a]'
+
++vi-git-untracked(){
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+        git status --porcelain | grep '??' &> /dev/null ; then
+        hook_com[staged]+='%F{red}+'
+    fi
+}
+
+# 色の設定
+export LSCOLORS=Exfxcxdxbxegedabagacad
+
+# 補完時の色設定
+export LS_COLORS='di=01;34:ln=01;35:so=01;32:ex=01;31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+
+# キャッシュの利用による補完の高速化
+zstyle ':completion::complete:*' use-cache true
+
+# 補完候補に色つける
+autoload -U colors ; colors ; zstyle ':completion:*' list-colors "${LS_COLORS}"
+
+# 大文字・小文字を区別しない(大文字を入力した場合は区別する)
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# manの補完をセクション番号別に表示させる
+zstyle ':completion:*:manuals' separate-sections true
 
 # Preferred editor for local and remote sessions
 export EDITOR='vim'
@@ -132,6 +181,8 @@ if command -v eza &> /dev/null; then
   alias ll="eza -la"
   alias lt="eza -T"
   alias la="eza -a"
+else
+  alias ll="ls -laG"
 fi
 
 if command -v bat &> /dev/null; then
@@ -151,6 +202,7 @@ if command -v duf &> /dev/null; then
 fi
 
 # Other aliases
+alias dirs="dirs -v"
 alias g='cd $(ghq root)/$(ghq list | peco)'
 alias mysql="mysql --pager='less -S -n -i -F -X'"
 alias ssm="aws ssm start-session --target"
@@ -172,17 +224,20 @@ alias tm="task modify"
 alias tstart="task start"
 alias tstop="task stop"
 
-# zplug configuration (if needed alongside oh-my-zsh)
+# zplug configuration
 if [[ ! -d ~/.zplug ]]; then
   git clone https://github.com/zplug/zplug ~/.zplug
 fi
 
 source ~/.zplug/init.zsh
 
-# Additional plugins via zplug
+# プラグインList
+zplug "zsh-users/zsh-completions"
+zplug "zsh-users/zsh-autosuggestions"
+zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "b4b4r07/enhancd", use:init.sh
 
-# Install plugins if there are plugins that have not been installed
+# インストールしていないプラグインをインストール
 if ! zplug check --verbose; then
   printf "Install? [y/N]: "
   if read -q; then
@@ -190,5 +245,5 @@ if ! zplug check --verbose; then
   fi
 fi
 
-# Load zplug plugins
+# コマンドをリンクして、PATH に追加し、プラグインは読み込む
 zplug load --verbose
