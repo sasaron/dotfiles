@@ -113,6 +113,12 @@ if command -v code &> /dev/null; then
     "$DOTFILEDIR/bin/install-vscode-extensions.sh"
 fi
 
+# Install global npm packages
+if command -v npm &> /dev/null; then
+    echo "Installing global npm packages..."
+    "$DOTFILEDIR/bin/install-npm-packages.sh"
+fi
+
 # Set up screenshot directory
 echo "Setting up screenshot directory..."
 mkdir -p "$HOME/Desktop/capturefile"

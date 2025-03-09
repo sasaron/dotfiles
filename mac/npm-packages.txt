@@ -1,0 +1,9 @@
+npm
+yarn
+typescript
+@types/node
+ts-node
+eslint
+prettier
+@anthropic-ai/claude-code@0.2.35
+aws-cdk@2.174.0
