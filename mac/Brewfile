@@ -31,13 +31,12 @@ brew "tree"
 brew "wget"
 brew "zplug"
 brew "starship"
-# New tools
 brew "eza"
 brew "bat"
 brew "bottom"  # btm
 brew "dust"
 brew "duf"
-brew "taskwarrior"
+brew "taskwarrior-tui"
 brew "zellij"
 # oh-my-zsh dependencies
 brew "git"

@@ -99,16 +99,16 @@ keybinds {
         bind "o" { SearchToggleOption "WholeWord"; }
     }
     entersearch {
-        bind "Ctrl c" "Escape" { SwitchToMode "Scroll"; }
+        bind "Ctrl c" "Esc" { SwitchToMode "Scroll"; }
         bind "Enter" { SwitchToMode "Search"; }
     }
     renametab {
         bind "Ctrl c" { SwitchToMode "Normal"; }
-        bind "Escape" { UndoRenameTab; SwitchToMode "Tab"; }
+        bind "Esc" { UndoRenameTab; SwitchToMode "Tab"; }
     }
     renamepane {
         bind "Ctrl c" { SwitchToMode "Normal"; }
-        bind "Escape" { UndoRenamePane; SwitchToMode "Pane"; }
+        bind "Esc" { UndoRenamePane; SwitchToMode "Pane"; }
     }
     session {
         bind "Ctrl o" { SwitchToMode "Normal"; }
@@ -151,7 +151,8 @@ keybinds {
         bind "Alt ]" { NextSwapLayout; }
     }
     shared_except "normal" "locked" {
-        bind "Enter" "Escape" { SwitchToMode "Normal"; }
+        bind "Enter" { SwitchToMode "Normal"; }
+        bind "Esc" { SwitchToMode "Normal"; }
     }
     shared_except "pane" "locked" {
         bind "Ctrl p" { SwitchToMode "Pane"; }
