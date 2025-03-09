@@ -36,5 +36,6 @@ code --install-extension ms-vscode-remote.remote-ssh
 code --install-extension ms-vscode-remote.remote-ssh-edit
 code --install-extension ms-vscode.remote-explorer
 code --install-extension yzhang.markdown-all-in-one
+code --install-extension bierner.markdown-mermaid
 
 echo "VSCode extensions installation complete!"
