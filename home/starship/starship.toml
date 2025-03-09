@@ -7,6 +7,14 @@ scan_timeout = 10
 # Disable the blank line at the start of the prompt
 add_newline = false
 
+# Custom command to show current taskwarrior task
+[custom.taskwarrior]
+command = "task +ACTIVE export | jq -r 'if length > 0 then .[0].description else \"\" end'"
+when = "command -v task >/dev/null 2>&1"
+symbol = "📋 "
+style = "bold yellow"
+format = "[$symbol$output]($style) "
+
 # Replace the "❯" symbol in the prompt with "➜"
 [character]
 success_symbol = "[➜](bold green)"

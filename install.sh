@@ -77,11 +77,23 @@ fi
 mkdir -p "$HOME/.config"
 
 # Create symlinks for configuration directories in ~/.config
-for config_dir in alacritty starship; do
+for config_dir in alacritty starship zellij; do
     if [ -d "$DOTFILEDIR/home/$config_dir" ]; then
         create_symlink "$DOTFILEDIR/home/$config_dir" "$HOME/.config/$config_dir"
     fi
 done
+
+# Install oh-my-zsh if not already installed
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "Installing oh-my-zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    
+    # Install zsh-autosuggestions plugin
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    
+    # Install zsh-syntax-highlighting plugin
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+fi
 
 # Set up git configuration
 if command -v ghq &> /dev/null; then
