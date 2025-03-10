@@ -15,7 +15,7 @@
     {
       "label": "Open Repository (ghq) - Current Window",
       "type": "shell",
-      "command": "code -r $(ghq list -p | pece)",
+      "command": "code -r $(ghq list -p | peco)",
       "presentation": {
         "reveal": "always",
         "panel": "new",
