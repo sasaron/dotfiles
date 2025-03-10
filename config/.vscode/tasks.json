@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Open Repository (ghq) - New Window",
+      "type": "shell",
+      "command": "code -n $(ghq list -p | peco)",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Repository (ghq) - Current Window",
+      "type": "shell",
+      "command": "code -r $(ghq list -p | pece)",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

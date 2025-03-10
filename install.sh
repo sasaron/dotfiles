@@ -83,6 +83,14 @@ for config_dir in alacritty starship zellij; do
     fi
 done
 
+# Create .vscode directory if it doesn't exist
+mkdir -p "$HOME/.vscode"
+
+# Create symlink for VSCode tasks.json
+if [ -f "$DOTFILEDIR/config/.vscode/tasks.json" ]; then
+    create_symlink "$DOTFILEDIR/config/.vscode/tasks.json" "$HOME/.vscode/tasks.json"
+fi
+
 # Install oh-my-zsh if not already installed
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "Installing oh-my-zsh..."
