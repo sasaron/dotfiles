@@ -98,7 +98,7 @@ done
 
 # Create symlink for changelog.config.js
 if [ -f "$DOTFILEDIR/home/changelog.config.js" ]; then
-    create_symlink "$DOTFILEDIR/home/changelog.config.js" "$HOME/.config/changelog.config.js"
+    create_symlink "$DOTFILEDIR/home/changelog.config.js" "$HOME/changelog.config.js"
 fi
 
 # Create .vscode directory if it doesn't exist
