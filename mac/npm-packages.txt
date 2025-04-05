@@ -9,3 +9,4 @@ prettier
 aws-cdk@2.174.0
 @commitlint/cli
 @commitlint/config-conventional
+git-cz

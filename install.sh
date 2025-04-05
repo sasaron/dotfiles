@@ -68,27 +68,69 @@ echo "Creating symlinks for configuration files..."
 create_symlink "$DOTFILEDIR/config/.zshrc" "$HOME/.zshrc"
 create_symlink "$DOTFILEDIR/config/vimrc" "$HOME/.vimrc"
 
-# Create symlink for bin directory
+# Create bin directory if it doesn't exist
+mkdir -p "$HOME/bin"
+
+# Create symlinks for scripts in bin directory, excluding Go tools
 if [ -d "$DOTFILEDIR/bin" ]; then
-    create_symlink "$DOTFILEDIR/bin" "$HOME/bin"
+    for script in "$DOTFILEDIR/bin"/*; do
+        # Skip Go-related binaries
+        if [[ "$(basename "$script")" =~ ^(arch-go|dlv|ginkgolinter|goimports|golangci-lint|gomodifytags|goplay|gopls|gotests|impl|revive|staticcheck|wire)$ ]]; then
+            echo "Skipping Go tool: $(basename "$script")"
+            continue
+        fi
+        
+        if [ -f "$script" ] && [ -x "$script" ]; then
+            create_symlink "$script" "$HOME/bin/$(basename "$script")"
+        fi
+    done
 fi
 
 # Create ~/.config directory if it doesn't exist
 mkdir -p "$HOME/.config"
 
 # Create symlinks for configuration directories in ~/.config
-for config_dir in alacritty starship zellij; do
+for config_dir in alacritty starship zellij commitlint; do
     if [ -d "$DOTFILEDIR/home/$config_dir" ]; then
         create_symlink "$DOTFILEDIR/home/$config_dir" "$HOME/.config/$config_dir"
     fi
 done
 
+# Create symlink for changelog.config.js
+if [ -f "$DOTFILEDIR/home/changelog.config.js" ]; then
+    create_symlink "$DOTFILEDIR/home/changelog.config.js" "$HOME/.config/changelog.config.js"
+fi
+
 # Create .vscode directory if it doesn't exist
 mkdir -p "$HOME/.vscode"
 
-# Create symlink for VSCode tasks.json
-if [ -f "$DOTFILEDIR/config/.vscode/tasks.json" ]; then
-    create_symlink "$DOTFILEDIR/config/.vscode/tasks.json" "$HOME/.vscode/tasks.json"
+# Create symlinks for VSCode configuration files
+if [ -d "$DOTFILEDIR/config/.vscode" ]; then
+    # Create .vscode directory if it doesn't exist
+    mkdir -p "$HOME/.vscode"
+    
+    # Symlink tasks.json
+    if [ -f "$DOTFILEDIR/config/.vscode/tasks.json" ]; then
+        create_symlink "$DOTFILEDIR/config/.vscode/tasks.json" "$HOME/.vscode/tasks.json"
+    fi
+    
+    # Create VSCode User directory if it doesn't exist
+    mkdir -p "$HOME/Library/Application Support/Code/User"
+    
+    # Symlink settings.json
+    if [ -f "$DOTFILEDIR/config/.vscode/settings.json" ]; then
+        create_symlink "$DOTFILEDIR/config/.vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+    fi
+    
+    # Symlink keybindings.json
+    if [ -f "$DOTFILEDIR/config/.vscode/keybindings.json" ]; then
+        create_symlink "$DOTFILEDIR/config/.vscode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
+    fi
+    
+    # Symlink snippets directory
+    if [ -d "$DOTFILEDIR/config/.vscode/snippets" ]; then
+        create_symlink "$DOTFILEDIR/config/.vscode/snippets" "$HOME/Library/Application Support/Code/User/snippets"
+    fi
 fi
 
 # Install oh-my-zsh if not already installed
