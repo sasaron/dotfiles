@@ -25,6 +25,15 @@ else
     echo "Homebrew is already installed."
 fi
 
+# Install fzf
+if ! command -v fzf &> /dev/null; then
+    echo "Installing fzf..."
+    brew install fzf
+    "$(brew --prefix)/opt/fzf/install" --all --no-bash --no-fish
+else
+    echo "fzf is already installed."
+fi
+
 # Install packages from Brewfile
 if [ -f "$DOTFILEDIR/mac/Brewfile" ]; then
     echo "Installing packages from Brewfile..."
@@ -155,6 +164,15 @@ fi
 if [ ! -d "$HOME/.vim" ]; then
     echo "Setting up vim..."
     mkdir -p "$HOME/.vim"
+fi
+
+# Install vim-plug
+if [ ! -f "$HOME/.vim/autoload/plug.vim" ]; then
+    echo "Installing vim-plug..."
+    curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+else
+    echo "vim-plug is already installed."
 fi
 
 # Install VSCode extensions

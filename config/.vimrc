@@ -4,12 +4,26 @@ if &compatible
   set nocompatible               " Be iMproved
 endif
 
-packadd! morhetz/gruvbox
-packadd! itchyny/lightline.vim
-packadd! vim-syntastic/syntastic
-packadd! tpope/vim-fugitive
-packadd! soramugi/auto-ctags.vim
-packadd! w0rp/ale
+" vim-plug setup
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+
+" Plugins managed by vim-plug
+Plug 'morhetz/gruvbox'
+Plug 'itchyny/lightline.vim'
+Plug 'vim-syntastic/syntastic'
+Plug 'tpope/vim-fugitive'
+Plug 'soramugi/auto-ctags.vim'
+Plug 'dense-analysis/ale'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+call plug#end()
 
 " Required:
 filetype plugin indent on
@@ -119,6 +133,12 @@ set nobackup
 "nnoremap <silent> [unite]b :<C-u>Unite<space>buffer<CR>
 "nnoremap <silent> [unite]f :<C-u>Unite<space>file<CR>
 
+" FZF configuration
+nnoremap <silent> <Leader>f :Files<CR>
+nnoremap <silent> <Leader>b :Buffers<CR>
+nnoremap <silent> <Leader>l :Lines<CR>
+nnoremap <silent> <Leader>g :GFiles<CR>
+
 "---------------------------------------------------------------------------
 " プラグインに関する設定:
 "
@@ -192,6 +212,13 @@ function! LightlineTabFilename(n) abort
   return _ !=# '' ? _ : '[No Name]'
 endfunction
 
+" Ensure lightline colorscheme is set correctly
+if !exists('g:lightline')
+  let g:lightline = {}
+endif
+
+let g:lightline.colorscheme = 'gruvbox'
+
 " 常にtabを表示
 set showtabline=2
 set tabline=%!MyTabLine()
@@ -227,6 +254,8 @@ inoremap <C-]> <ESC>g<C-]>
 nnoremap <silent><Leader><C-]> <C-w><C-]><C-w>T
 nnoremap <C-]> :tab sp<CR> :exe("tjump ".expand('<cword>'))<CR>
 
+" Command to update all plugins
+command! PlugUpdate call plug#update()
 
 set encoding=utf-8
 set fileencodings=utf-8
