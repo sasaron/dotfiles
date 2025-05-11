@@ -6,80 +6,8 @@ export ZSH="$HOME/.oh-my-zsh"
 # Set name of the theme to load
 ZSH_THEME="robbyrussell"
 
-# Set list of themes to pick from when loading at random
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
 # Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-HIST_STAMPS="yyyy-mm-dd"
-
 # Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  git
-  github
-  docker
-  docker-compose
-  npm
-  yarn
-  golang
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-)
-
-source $ZSH/oh-my-zsh.sh
-
-# User configuration
-
-# 日本語を使用
 export LANG=ja_JP.UTF-8
 
 # 色を使用
@@ -100,20 +28,34 @@ export PATH="/opt/homebrew/opt/gnu-getopt/bin:$PATH"
 
 # History settings
 HISTFILE=~/.zsh_history
-HISTSIZE=1000
-SAVEHIST=1000
+HISTSIZE=5000
+SAVEHIST=5000
 export HISTTIMEFORMAT='%Y-%m-%dT%T%z '
 export HISTCONTROL=erasedups
 export HISTIGNORE=?:??:exit:history:ls*:pwd:cd*
+setopt HIST_IGNORE_ALL_DUPS
 
 # コマンドミスを修正
 setopt correct
+
+# 補完機能を有効化
+autoload -Uz compinit
+compinit
 
 # 補完の選択を楽にする
 zstyle ':completion:*' menu select
 
 # 補完候補をできるだけ詰めて表示する
 setopt list_packed
+
+# Tab連打で補完候補を順に表示
+setopt auto_menu
+
+# TAB で順に補完候補を切り替える
+setopt auto_param_keys
+
+# 補完候補一覧でファイルの種別をマーク表示
+setopt list_types
 
 # Git settings from config/.zshrc
 autoload -Uz vcs_info
@@ -162,19 +104,6 @@ export PATH="$GOPATH/bin:$PATH"
 # Initialize starship prompt
 eval "$(starship init zsh)"
 
-# Zellij configuration
-# if [[ -z "$ZELLIJ" ]]; then
-#   if [[ "$ZELLIJ_AUTO_ATTACH" == "true" ]]; then
-#     zellij attach -c
-#   else
-#     zellij
-#   fi
-# 
-#   if [[ "$ZELLIJ_AUTO_EXIT" == "true" ]]; then
-#     exit
-#   fi
-# fi
-
 # Modern command replacements
 if command -v eza &> /dev/null; then
   alias ls="eza"
@@ -203,13 +132,17 @@ fi
 
 # Other aliases
 alias dirs="dirs -v"
-alias g='cd $(ghq root)/$(ghq list | peco)'
+alias g='local repo=$(ghq list | fzf --preview "tree -C $(ghq root)/{} | head -100") && cd "$(ghq root)/$repo"'
+# fzf-based interactive history search
+alias h='BUFFER=$(history -n 1 | sort -r | uniq | fzf); CURSOR=$#BUFFER; zle reset-prompt'
+zle -N h
+bindkey '^H' h
 alias mysql="mysql --pager='less -S -n -i -F -X'"
 alias ssm="aws ssm start-session --target"
 
 # Functions
 function hiscopy() {
-    history | perl -anle 'print "@F[ 1..$#F ]"' | peco | perl -ne 's/\n$//g;print' | pbcopy
+    history | perl -anle 'print "@F[ 1..$#F ]"' | fzf | perl -ne 's/\n$//g;print' | pbcopy
 }
 
 # Taskwarrior aliases
@@ -233,11 +166,24 @@ fi
 
 source ~/.zplug/init.zsh
 
+# Disable zplug's automatic compinit to manually control its execution
+zstyle ':zplug:config:compinit' run no
+
+# Add Homebrew's site-functions to fpath for completions like AWS CLI
+if command -v brew &> /dev/null; then
+  HOMEBREW_PREFIX=$(brew --prefix)
+  if [ -d "$HOMEBREW_PREFIX/share/zsh/site-functions" ]; then
+    fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
+  fi
+fi
+
 # プラグインList
-zplug "zsh-users/zsh-completions"
+zplug "zsh-users/zsh-completions" 
 zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "b4b4r07/enhancd", use:init.sh
+zplug "zsh-users/zsh-history-substring-search"
+zplug "zsh-users/zsh-history-substring-search", use:history-substring-search.zsh
 
 # インストールしていないプラグインをインストール
 if ! zplug check --verbose; then
@@ -249,3 +195,9 @@ fi
 
 # コマンドをリンクして、PATH に追加し、プラグインは読み込む
 zplug load --verbose
+
+# Manually initialize the completion system after all plugins are loaded
+autoload -Uz compinit && compinit
+
+# Added by Windsurf
+export PATH="/Users/sasakiry/.codeium/windsurf/bin:$PATH"
