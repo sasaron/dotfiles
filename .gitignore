@@ -1,0 +1,6 @@
+# Machine-local exports can contain private paths and commands.
+/local/
+.DS_Store
+.claude/settings.local.json
+**/auth.json
+**/.credentials.json
