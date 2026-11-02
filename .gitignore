@@ -4,3 +4,6 @@
 .claude/settings.local.json
 **/auth.json
 **/.credentials.json
+
+# Local chezmoi binary; Homebrew supplies it on new machines.
+/bin/chezmoi
