@@ -1,0 +1,8 @@
+# zsh-completions を fpath に足してから compinit する。
+# enhancd は読み込み時に compdef を使うので、compinit より後に置く
+zsh-users/zsh-completions path:src kind:fpath post:_init_completion
+b4b4r07/enhancd
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-history-substring-search
+# ウィジェットをラップするので最後に読み込む
+zsh-users/zsh-syntax-highlighting

@@ -41,10 +41,6 @@ setopt HIST_IGNORE_ALL_DUPS
 # コマンドミスを修正
 setopt correct
 
-# 補完機能を有効化
-autoload -Uz compinit
-compinit
-
 # 補完の選択を楽にする
 zstyle ':completion:*' menu select
 
@@ -196,16 +192,6 @@ alias tstart="task start"
 alias tstop="task stop"
 
 
-# zplug configuration
-if [[ ! -d ~/.zplug ]]; then
-  git clone https://github.com/zplug/zplug ~/.zplug
-fi
-
-source ~/.zplug/init.zsh
-
-# Disable zplug's automatic compinit to manually control its execution
-zstyle ':zplug:config:compinit' run no
-
 # Add Homebrew's site-functions to fpath for completions like AWS CLI
 if command -v brew &> /dev/null; then
   HOMEBREW_PREFIX=$(brew --prefix)
@@ -214,29 +200,31 @@ if command -v brew &> /dev/null; then
   fi
 fi
 
-# プラグインList
-zplug "zsh-users/zsh-completions" 
-zplug "zsh-users/zsh-autosuggestions"
-zplug "zsh-users/zsh-syntax-highlighting", defer:2
-zplug "b4b4r07/enhancd", use:init.sh
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-history-substring-search", use:history-substring-search.zsh
-
-# インストールしていないプラグインをインストール
-if ! zplug check --verbose; then
-  printf "Install? [y/N]: "
-  if read -q; then
-    echo; zplug install
+# 補完機能を有効化。ダンプが24時間以内なら再生成と権限チェックを省く
+_init_completion() {
+  autoload -Uz compinit
+  local fresh_dump=(~/.zcompdump(N.mh-24))
+  if (( $#fresh_dump )); then
+    compinit -C
+  else
+    compinit
+    touch ~/.zcompdump
   fi
+}
+
+# プラグインは ~/.zsh_plugins.txt で管理する。
+# _init_completion は .zsh_plugins.txt の post: から呼ばれる
+antidote_home="${HOMEBREW_PREFIX:-/opt/homebrew}/opt/antidote/share/antidote"
+if [[ -r "$antidote_home/antidote.zsh" ]]; then
+  source "$antidote_home/antidote.zsh"
+  antidote load ~/.zsh_plugins.txt
+else
+  echo "antidote not found: install it with 'brew install antidote'" >&2
+  _init_completion
 fi
+unset antidote_home
 
-# コマンドをリンクして、PATH に追加し、プラグインは読み込む
-zplug load --verbose
-
-# Manually initialize the completion system after all plugins are loaded
-autoload -Uz compinit && compinit
-
-# 履歴検索。ウィジェットは zplug load 後でないと存在しない
+# 履歴検索。ウィジェットはプラグイン読み込み後でないと存在しない
 if zle -la | grep -q '^history-substring-search-up$'; then
     bindkey -M vicmd 'k' history-substring-search-up
     bindkey -M vicmd 'j' history-substring-search-down

@@ -75,6 +75,7 @@ create_symlink() {
 # Create symlinks for dotfiles
 echo "Creating symlinks for configuration files..."
 create_symlink "$DOTFILEDIR/config/.zshrc" "$HOME/.zshrc"
+create_symlink "$DOTFILEDIR/config/.zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
 create_symlink "$DOTFILEDIR/config/.vimrc" "$HOME/.vimrc"
 
 # Create bin directory if it doesn't exist
