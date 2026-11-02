@@ -1,0 +1,26 @@
+onboarding = false
+# herdr 設定。既定値の一覧は `herdr --default-config`。
+# 変更後は `herdr server reload-config` か prefix+shift+r で反映する。
+
+[keys]
+# prefix なしでも pane を移動できるようにする。vim 側の Ctrl+h/j/k/l とは
+# 別チャネルなので、vim split と herdr pane で同じ指の動きが使える。
+focus_pane_left = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up = ["prefix+k", "ctrl+alt+k"]
+focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+
+# prefix+e は既定で scrollback を $EDITOR に開く。こちらはファイルに落とす。
+[[keys.command]]
+key = "prefix+shift+e"
+type = "shell"
+command = "$HOME/bin/herdr-dump-scrollback"
+
+[experimental]
+# pane の画面履歴を ~/.config/herdr/session-history.json に平文で保存する。
+# https://herdr.dev/docs/session-state/ の警告のとおり、トークンやプロンプトが
+# そのまま残るので、このディレクトリはシェル履歴と同じ扱いにする。
+pane_history = true
+
+# IME 有効時に prefix が取りこぼされる場合は次を true にする。
+# switch_ascii_input_source_in_prefix = true

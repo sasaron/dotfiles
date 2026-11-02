@@ -38,6 +38,7 @@ brew "dust"
 brew "duf"
 brew "taskwarrior-tui"
 brew "zellij"
+brew "herdr"
 # oh-my-zsh dependencies
 brew "git"
 brew "node"
@@ -47,7 +48,6 @@ brew "docker"
 brew "bc"
 brew "gcalcli"
 cask "google-cloud-sdk"
-cask "alacritty"
 cask "visual-studio-code"
 cask "claude"
 cask "chatgpt"
@@ -55,3 +55,16 @@ cask "google-chrome"
 cask "spotify"
 cask "slack"
 cask "google-japanese-ime"
+
+# AI coding CLIs (desktop applications above are separate)
+cask "claude-code"
+cask "codex"
+
+# Python MCP server runner
+brew "uv"
+
+cask "iterm2"
+cask "raycast"
+
+# Dotfile management
+brew "chezmoi"

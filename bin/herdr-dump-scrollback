@@ -1,0 +1,24 @@
+#!/bin/sh
+# キーバインドから起動されたときは HERDR_ACTIVE_PANE_ID、pane の中で直接叩いたときは
+# HERDR_PANE_ID しか入らない。どちらでも動くように両方を見る。
+set -eu
+umask 077
+
+pane="${1:-${HERDR_ACTIVE_PANE_ID:-${HERDR_PANE_ID:-}}}"
+if [ -z "$pane" ]; then
+    echo "herdr-dump-scrollback: pane id が取得できない" >&2
+    exit 1
+fi
+
+herdr="${HERDR_BIN_PATH:-herdr}"
+lines="${HERDR_SCROLLBACK_LINES:-10000}"
+dir="${HERDR_SCROLLBACK_DIR:-$HOME/.herdr/scrollback}"
+
+mkdir -p "$dir"
+chmod 700 "$dir"
+
+out="$dir/$(date +%Y%m%dT%H%M%S)-$(printf '%s' "$pane" | tr ':' '-').log"
+"$herdr" pane read "$pane" --source recent --lines "$lines" --format text >"$out"
+
+"$herdr" notification show "scrollback を書き出した" --body "$out" --position bottom-right >/dev/null 2>&1 || true
+echo "$out"

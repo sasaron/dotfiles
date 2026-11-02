@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+# Kiro CLI pre block. Keep at the top of this file.
+[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh"
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -101,6 +104,35 @@ export GOPATH="$HOME"
 export GOBIN="$GOPATH/bin"
 export PATH="$GOPATH/bin:$PATH"
 
+# vi キーバインド
+bindkey -v
+export KEYTIMEOUT=1
+
+# insert mode では行編集のバインドを残す
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
+bindkey -M viins '^K' kill-line
+bindkey -M viins '^U' backward-kill-line
+bindkey -M viins '^W' backward-kill-word
+bindkey -M viins '^Y' yank
+bindkey -M viins '^R' history-incremental-search-backward
+bindkey -M viins '^?' backward-delete-char
+
+# モードをカーソル形状で示す。starship init より前に置く。後ろに置くと
+# starship が zle-keymap-select を差し替えてモード切替の再描画が止まる
+function zle-keymap-select() {
+    case "$KEYMAP" in
+        vicmd) printf '\e[2 q' ;;
+        *)     printf '\e[6 q' ;;
+    esac
+}
+zle -N zle-keymap-select
+
+function zle-line-init() {
+    printf '\e[6 q'
+}
+zle -N zle-line-init
+
 # Initialize starship prompt
 eval "$(starship init zsh)"
 
@@ -134,9 +166,15 @@ fi
 alias dirs="dirs -v"
 alias g='local repo=$(ghq list | fzf --preview "tree -C $(ghq root)/{} | head -100") && cd "$(ghq root)/$repo"'
 # fzf-based interactive history search
-alias h='BUFFER=$(history -n 1 | sort -r | uniq | fzf); CURSOR=$#BUFFER; zle reset-prompt'
+# zle -N は関数しか呼べない。alias のままだと ^H が "No such shell function" になる
+function h() {
+    BUFFER=$(history -n 1 | sort -r | uniq | fzf)
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
 zle -N h
-bindkey '^H' h
+bindkey -M viins '^H' h
+bindkey -M vicmd '^H' h
 alias mysql="mysql --pager='less -S -n -i -F -X'"
 alias ssm="aws ssm start-session --target"
 
@@ -157,7 +195,6 @@ alias tm="task modify"
 alias tstart="task start"
 alias tstop="task stop"
 
-alias claude="/opt/homebrew/bin/claude"
 
 # zplug configuration
 if [[ ! -d ~/.zplug ]]; then
@@ -199,5 +236,36 @@ zplug load --verbose
 # Manually initialize the completion system after all plugins are loaded
 autoload -Uz compinit && compinit
 
+# 履歴検索。ウィジェットは zplug load 後でないと存在しない
+if zle -la | grep -q '^history-substring-search-up$'; then
+    bindkey -M vicmd 'k' history-substring-search-up
+    bindkey -M vicmd 'j' history-substring-search-down
+    bindkey -M viins '^P' history-substring-search-up
+    bindkey -M viins '^N' history-substring-search-down
+fi
+
 # Added by Windsurf
 export PATH="/Users/sasakiry/.codeium/windsurf/bin:$PATH"
+
+alias claude="/Users/sasakiry/.claude/local/claude"
+
+
+# yazi。終了時のディレクトリにシェルも移動する
+y() {
+    local tmp cwd
+    tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(command cat -- "$tmp")" && [[ -n "$cwd" && "$cwd" != "$PWD" ]]; then
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+
+# Kiro CLI post block. Keep at the bottom of this file.
+[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+
+# mise (Ruby version manager)
+eval "$(mise activate zsh)"

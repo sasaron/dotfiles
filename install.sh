@@ -75,7 +75,7 @@ create_symlink() {
 # Create symlinks for dotfiles
 echo "Creating symlinks for configuration files..."
 create_symlink "$DOTFILEDIR/config/.zshrc" "$HOME/.zshrc"
-create_symlink "$DOTFILEDIR/config/vimrc" "$HOME/.vimrc"
+create_symlink "$DOTFILEDIR/config/.vimrc" "$HOME/.vimrc"
 
 # Create bin directory if it doesn't exist
 mkdir -p "$HOME/bin"
@@ -99,11 +99,25 @@ fi
 mkdir -p "$HOME/.config"
 
 # Create symlinks for configuration directories in ~/.config
-for config_dir in alacritty starship zellij commitlint; do
+for config_dir in zellij commitlint; do
     if [ -d "$DOTFILEDIR/home/$config_dir" ]; then
         create_symlink "$DOTFILEDIR/home/$config_dir" "$HOME/.config/$config_dir"
     fi
 done
+
+# Starship is managed by chezmoi. Inspect the diff before applying on existing machines.
+if command -v chezmoi >/dev/null 2>&1; then
+    echo "Applying chezmoi-managed configuration..."
+    chezmoi --source "$DOTFILEDIR" apply || { echo "chezmoi apply failed" >&2; exit 1; }
+else
+    echo "chezmoi is missing; install it and rerun setup." >&2
+    exit 1
+fi
+
+# herdr は同じディレクトリに socket と session ファイルを作る。
+# ディレクトリごと張るとリポジトリに入り込むので config.toml だけ張る
+mkdir -p "$HOME/.config/herdr"
+create_symlink "$DOTFILEDIR/home/herdr/config.toml" "$HOME/.config/herdr/config.toml"
 
 # Create symlink for changelog.config.js
 if [ -f "$DOTFILEDIR/home/changelog.config.js" ]; then

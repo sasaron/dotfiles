@@ -1,0 +1,84 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Wait 10 milliseconds for starship to check files under the current directory.
+scan_timeout = 10
+
+# Disable the blank line at the start of the prompt
+add_newline = false
+
+# Custom command to show current taskwarrior task
+[custom.taskwarrior]
+command = "task +ACTIVE export | jq -r 'if length > 0 then .[0].description else \"\" end'"
+when = "command -v task >/dev/null 2>&1"
+symbol = "📋 "
+style = "bold yellow"
+format = "[$symbol$output]($style) "
+
+# vi mode の表示だけに使う。insert は >、normal は $。
+# 直前のコマンドの成否は出さないので success と error を同じにする
+# $ は format 中で変数の開始記号として解釈されるので、リテラル文字列で \$ と書く
+[character]
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold green)"
+vimcmd_symbol = '[\$](bold yellow)'
+
+# Disable the package module, hiding it from the prompt completely
+[package]
+disabled = true
+
+[aws]
+format = 'on [$symbol($profile )(\($region\) )]($style)'
+style = "bold blue"
+symbol = "☁️ "
+
+[cmd_duration]
+format = "took [$duration]($style) "
+style = "yellow"
+
+[directory]
+truncation_length = 5
+format = "[$path]($style)[$read_only]($read_only_style) "
+
+[git_branch]
+format = "on [$symbol$branch]($style) "
+symbol = "🌱 "
+style = "bold purple"
+
+[git_commit]
+commit_hash_length = 8
+style = "bold white"
+
+[git_state]
+format = '[\($state( $progress_current of $progress_total)\)]($style) '
+
+[git_status]
+conflicted = "⚔️ "
+ahead = "🏎️ 💨 ×${count}"
+behind = "🐢 ×${count}"
+diverged = "🔱 🏎️ 💨 ×${ahead_count} 🐢 ×${behind_count}"
+untracked = "🛤️  ×${count}"
+stashed = "📦 "
+modified = "📝 ×${count}"
+staged = "🗃️  ×${count}"
+renamed = "📛 ×${count}"
+deleted = "🗑️  ×${count}"
+style = "bright-white"
+format = '([\[$all_status$ahead_behind\]]($style) )'
+
+[hostname]
+ssh_only = true
+format = "[$hostname]($style) in "
+trim_at = "-"
+style = "bold dimmed white"
+disabled = false
+
+[memory_usage]
+format = "$symbol[${ram}( | ${swap})]($style) "
+threshold = 70
+style = "bold dimmed white"
+disabled = false
+
+[username]
+style_user = "bold blue"
+show_always = false
