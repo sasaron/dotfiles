@@ -97,8 +97,9 @@ export EDITOR='vim'
 
 # Golang settings
 export GOPATH="$HOME"
-export GOBIN="$GOPATH/bin"
-export PATH="$GOPATH/bin:$PATH"
+# ~/bin はリポジトリの bin/ へのリンクなので、Go ツールは別の場所に入れる
+export GOBIN="$HOME/.go/bin"
+export PATH="$GOBIN:$GOPATH/bin:$PATH"
 
 # vi キーバインド
 bindkey -v

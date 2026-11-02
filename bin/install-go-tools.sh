@@ -21,6 +21,10 @@ GO_TOOLS=(
   "github.com/mgechev/revive@latest"
   "honnef.co/go/tools/cmd/staticcheck@latest"
   "github.com/google/wire/cmd/wire@latest"
+  "github.com/fe3dback/go-arch-lint@latest"
+  "mvdan.cc/gofumpt@latest"
+  "github.com/pressly/goose/v3/cmd/goose@latest"
+  "github.com/securego/gosec/v2/cmd/gosec@latest"
 )
 
 # Store original GOBIN value
