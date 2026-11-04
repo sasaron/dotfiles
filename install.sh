@@ -98,6 +98,21 @@ fi
 # Create ~/.config directory if it doesn't exist
 mkdir -p "$HOME/.config"
 
+# mise は mise.lock を ~/.config/mise/ に書く。config.toml だけを張ると lock が
+# リポジトリの外にできる（mise 2026.9.8 で確認）ので、ディレクトリごと張る
+create_symlink "$DOTFILEDIR/home/mise" "$HOME/.config/mise"
+
+# Node、Go、Python と Go 製ツールを mise.lock のバージョンで入れる。
+# 以降の npm install が mise の Node を使うよう、shims を PATH に足す
+if command -v mise >/dev/null 2>&1; then
+    echo "Installing tools with mise..."
+    mise install || { echo "mise install failed" >&2; exit 1; }
+    eval "$(mise activate bash --shims)"
+else
+    echo "mise is missing; install it with the Brewfile and rerun setup." >&2
+    exit 1
+fi
+
 # Create symlinks for configuration directories in ~/.config
 for config_dir in zellij commitlint; do
     if [ -d "$DOTFILEDIR/home/$config_dir" ]; then

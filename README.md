@@ -1,7 +1,7 @@
 # dotfiles
 
-macOS 用の個人設定ファイル。Homebrew でアプリを入れ、`install.sh` で設定ファイルを
-シンボリックリンクする。Starship の設定は chezmoi で管理する。
+macOS 用の個人設定ファイル。Homebrew でアプリを、mise で Node、Go、Python を入れ、
+`install.sh` で設定ファイルをシンボリックリンクする。Starship の設定は chezmoi で管理する。
 
 主な構成は次のとおり。
 
@@ -42,13 +42,14 @@ bash /tmp/dotfiles-bootstrap.sh
 | `./bin/install-ai-skills.sh` | `skills/` を Claude Code と Codex にリンクする |
 | `python3 ./bin/export-ai-settings.py` | Claude と Codex の設定を `local/` へ export する |
 | `chezmoi --source "$PWD" apply` | Starship の設定を反映する |
+| `mise install --locked` | `home/mise/` の Node、Go、Python と Go ツールを入れる |
 
 ## ディレクトリ
 
 | パス | 内容 |
 |---|---|
 | `config/` | `.zshrc`、`.vimrc`、VS Code、AI 設定 |
-| `home/` | zellij、herdr、commitlint などのアプリ設定 |
+| `home/` | zellij、herdr、mise、commitlint などのアプリ設定 |
 | `chezmoi/` | chezmoi で管理する設定 |
 | `mac/` | Brewfile と npm パッケージ一覧 |
 | `bin/` | セットアップと運用のスクリプト |

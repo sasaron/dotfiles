@@ -1,0 +1,34 @@
+# mise のグローバル設定。install.sh が ~/.config/mise をこのディレクトリにリンクする。
+# バージョンは同じディレクトリの mise.lock で固定する。ツールを足したら mise lock --global、
+# 更新は mise upgrade --bump で行い、mise.lock の差分を commit する。
+#
+# GUI アプリ（Claude デスクトップなど）はシェルの mise activate を通らないので、
+# MCP サーバーの起動に使う uv と node は Homebrew にも残している（mac/Brewfile）。
+
+[settings]
+# .ruby-version などを読む対象。既存の設定をそのまま移した
+idiomatic_version_file_enable_tools = ["ruby"]
+
+[tools]
+node = "24"
+go = "1.27"
+python = "3.13"
+
+# 旧 bin/install-go-tools.sh の一覧。latest の解決結果は mise.lock に残る。
+# goplay は v1.0.0 の go.mod に依存が足りず、mise が付ける -mod=readonly では
+# ビルドできないので外した（2026-11-05 確認）。必要なら go install で入れる。
+# golangci-lint はこのモジュールパスだと v1 系になる。v2 は .../v2/cmd/golangci-lint
+"go:github.com/go-delve/delve/cmd/dlv" = "latest"
+"go:github.com/golangci/golangci-lint/cmd/golangci-lint" = "latest"
+"go:golang.org/x/tools/cmd/goimports" = "latest"
+"go:github.com/fatih/gomodifytags" = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"go:github.com/cweill/gotests/gotests" = "latest"
+"go:github.com/josharian/impl" = "latest"
+"go:github.com/mgechev/revive" = "latest"
+"go:honnef.co/go/tools/cmd/staticcheck" = "latest"
+"go:github.com/google/wire/cmd/wire" = "latest"
+"go:github.com/fe3dback/go-arch-lint" = "latest"
+"go:mvdan.cc/gofumpt" = "latest"
+"go:github.com/pressly/goose/v3/cmd/goose" = "latest"
+"go:github.com/securego/gosec/v2/cmd/gosec" = "latest"

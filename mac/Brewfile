@@ -41,9 +41,6 @@ brew "zellij"
 brew "herdr"
 # oh-my-zsh dependencies
 brew "git"
-brew "node"
-brew "yarn"
-brew "go"
 brew "docker"
 brew "bc"
 brew "gcalcli"
@@ -60,8 +57,13 @@ cask "google-japanese-ime"
 cask "claude-code"
 cask "codex"
 
-# Python MCP server runner
+# MCP サーバーの起動に使う（uvx、npx）。GUI アプリはシェルの mise activate を通らないので、
+# Homebrew 版を PATH の既定として残す。シェルでは mise の node が先に見つかる
 brew "uv"
+brew "node"
+
+# 開発で使う Node、Go、Python と Go 製ツールは home/mise/config.toml で管理する
+brew "mise"
 
 cask "iterm2"
 cask "raycast"

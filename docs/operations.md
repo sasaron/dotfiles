@@ -72,6 +72,35 @@ Claude Code CLI は古い npm 固定版から Homebrew Cask 管理に変更し�
 利用中の導入経路との重複を解消してから install する。この変更だけでは既存の
 インストールを削除しない。
 
+## 開発ツールのバージョン管理
+
+Node、Go、Python と Go 製の開発ツールは mise で入れる。設定は
+[home/mise/config.toml](../home/mise/config.toml) にあり、`install.sh` が `~/.config/mise` を
+`home/mise/` にリンクする。解決したバージョンとチェックサムは `home/mise/mise.lock` に残る。
+
+```bash
+mise install --locked     # mise.lock のバージョンで入れる
+mise lock --global        # config.toml にツールを足したあと lock を作り直す
+mise upgrade --bump       # 更新する。mise.lock の差分を確認して commit する
+```
+
+確認した版は mise 2026.9.8（2026-11-05）。この版では、グローバル設定に `lockfile = true` を
+書いても `mise install` は `mise.lock` を作らなかった。また、`config.toml` だけをリンクすると
+`mise lock --global` は lock をリンク先ではなく `~/.config/mise/` に書いた。そのため
+ディレクトリごとリンクしている。
+
+Homebrew の `node` と `uv` は残している。Claude デスクトップなどの GUI アプリは
+`mise activate` を通らずに MCP サーバー（`npx`、`uvx`）を起動するため、その経路用の既定として使う。
+シェルでは mise が PATH の先頭に入るので、`node` と `npx` は mise 版が見つかる。
+
+`go:` バックエンドは `go install -mod=readonly` でビルドする。goplay は v1.0.0 の go.mod に
+依存が足りずに失敗するため、一覧から外した。golangci-lint は旧スクリプトと同じモジュールパスに
+してあるので v1 系（v1.64.8）になる。
+
+グローバルの npm パッケージ（`mac/npm-packages.txt`）はまだ mise に移していない。
+`install.sh` は mise の Node を PATH に入れてから `install-npm-packages.sh` を実行する。
+既存の Mac では Homebrew の Node に入れた分が `/opt/homebrew/bin` に残り、mise の Node で動く。
+
 ## Claude と Codex の設定 export
 
 ```bash

@@ -97,7 +97,8 @@ export EDITOR='vim'
 
 # Golang settings
 export GOPATH="$HOME"
-# ~/bin はリポジトリの bin/ へのリンクなので、Go ツールは別の場所に入れる
+# ~/bin はリポジトリの bin/ へのリンクなので、手で go install したものは別の場所に入れる。
+# 定常的に使う Go ツールは mise で管理する
 export GOBIN="$HOME/.go/bin"
 export PATH="$GOBIN:$GOPATH/bin:$PATH"
 
@@ -243,5 +244,6 @@ y() {
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 
-# mise (Ruby version manager)
+# mise。Node、Go、Python と Go 製ツールを入れる（home/mise/config.toml）。
+# PATH の先頭に足すので、Homebrew の同名コマンドより優先される
 eval "$(mise activate zsh)"
