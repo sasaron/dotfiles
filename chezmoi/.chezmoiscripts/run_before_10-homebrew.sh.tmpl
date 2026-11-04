@@ -1,0 +1,13 @@
+#!/bin/bash
+# mac/Brewfile のうち未導入のものを入れる。starship や antidote などの依存を揃えるため、
+# 設定ファイルより先に実行する。すべて導入済みなら brew bundle check だけで終わる
+set -euo pipefail
+{{ template "brew-env.sh" . }}
+command -v brew >/dev/null 2>&1 || { echo "Homebrew is missing; run bootstrap.sh first." >&2; exit 1; }
+
+brewfile={{ joinPath .chezmoi.workingTree "mac/Brewfile" | quote }}
+export HOMEBREW_NO_AUTO_UPDATE=1
+# --no-upgrade がないと、古い版が入っているだけでも未充足と判定される
+if ! brew bundle check --no-upgrade --file="$brewfile" >/dev/null 2>&1; then
+  brew bundle install --no-upgrade --file="$brewfile"
+fi

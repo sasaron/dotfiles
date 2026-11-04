@@ -1,0 +1,4 @@
+# chezmoi init --source <このリポジトリ> で ~/.config/chezmoi/chezmoi.toml になる。
+# sourceDir を作業ツリーにしておくと、以後は --source なしで chezmoi apply できる。
+# 作業ツリーの .chezmoiroot が chezmoi/ を指すので、ソースはこのディレクトリになる
+sourceDir = {{ .chezmoi.workingTree | quote }}

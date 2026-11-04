@@ -1,10 +1,8 @@
 # CLAUDE.md - Dotfiles Repository Guide
 
 ## Commands
-- Installation: `./install.sh`
-- Package Installation: `brew bundle --file="$DOTFILEDIR/mac/Brewfile"`
-- VSCode Extensions: `./bin/install-vscode-extensions.sh`
-- NPM Packages: `./bin/install-npm-packages.sh`
+- New Mac: `./bootstrap.sh` (runs `chezmoi init --apply --source <repo>`)
+- Apply the declared environment: `chezmoi apply` (idempotent; preview with `chezmoi diff`)
 
 ## Code Style Guidelines
 - Shell scripts: Follow POSIX standards where possible
@@ -12,14 +10,16 @@
 - Keep lines under 100 characters
 - Use snake_case for shell functions and variables
 - Document any non-obvious script behavior with comments
-- Prefer symlinks over copying config files
+- Put files for the home directory under `chezmoi/`. Write setup steps as `run_` scripts in
+  `chezmoi/.chezmoiscripts/` that check the current state, install only what is missing,
+  and exit non-zero on any failure. Declare package lists in `chezmoi/.chezmoidata/`
 - Verify config compatibility with both macOS and Linux when possible
 
 ## Repository Structure
-- `bin/`: Utility scripts
-- `config/`: Configuration files to be symlinked
-- `home/`: Application-specific configs
-- `mac/`: macOS-specific setup files
+- `chezmoi/`: chezmoi source (`.chezmoiroot` points here). Files for `$HOME` and setup scripts
+- `bin/`: Export scripts and helpers called by the setup scripts
+- `config/`: AI settings, including the Claude Code MCP servers
+- `mac/`: Brewfile
 
 ## Error Handling
 - Add error checking for critical operations

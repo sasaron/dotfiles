@@ -1,0 +1,30 @@
+#!/bin/bash
+# packages.go のうち ~/.go/bin にないコマンドを go install する。~/bin は chezmoi が
+# 管理するので、.zshrc と同じく GOBIN は ~/.go/bin にする
+set -uo pipefail
+{{ template "brew-env.sh" . }}
+if ! command -v go >/dev/null 2>&1; then
+  echo "go is missing; skipped Go tools until the next apply." >&2
+  exit 0
+fi
+
+tools=(
+{{- range .packages.go }}
+  {{ . | quote }}
+{{- end }}
+)
+export GOBIN="$HOME/.go/bin"
+mkdir -p "$GOBIN"
+failed=0
+for tool in "${tools[@]}"; do
+  path="${tool%@*}"
+  name="${path##*/}"
+  # .../goose/v3 のように末尾がメジャーバージョンなら、その一つ前が名前になる
+  if [[ "$name" =~ ^v[0-9]+$ ]]; then
+    path="${path%/*}"
+    name="${path##*/}"
+  fi
+  [ -x "$GOBIN/$name" ] && continue
+  go install "$tool" || failed=1
+done
+exit "$failed"

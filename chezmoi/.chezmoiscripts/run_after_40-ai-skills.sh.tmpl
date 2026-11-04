@@ -1,0 +1,22 @@
+#!/bin/bash
+# skills/ の各スキルを Claude Code と Codex のユーザー用 skills にリンクする。
+# 別の内容を持つ同名のスキルがあれば、上書きせずに残す
+set -euo pipefail
+root={{ joinPath .chezmoi.workingTree "skills" | quote }}
+
+for base in "${CODEX_HOME:-$HOME/.codex}/skills" "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills"; do
+  mkdir -p "$base"
+  for source in "$root"/*/; do
+    source="${source%/}"
+    [ -f "$source/SKILL.md" ] || continue
+    target="$base/$(basename "$source")"
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
+      continue
+    elif [ -e "$target" ] || [ -L "$target" ]; then
+      echo "Skill already exists; left unchanged: $target" >&2
+    else
+      ln -s "$source" "$target"
+      echo "Linked skill: $target"
+    fi
+  done
+done

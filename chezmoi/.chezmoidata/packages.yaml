@@ -1,0 +1,73 @@
+# chezmoi apply のたびに、ここにあって未導入のものだけを入れる。
+# Homebrew のパッケージは mac/Brewfile で管理する
+packages:
+  vscode:
+    - aki77.ghq
+    - amazonwebservices.codewhisperer-for-command-line-companion
+    - anthropic.claude-code
+    - bierner.markdown-mermaid
+    - bufbuild.vscode-buf
+    - christian-kohler.npm-intellisense
+    - christian-kohler.path-intellisense
+    - dbaeumer.vscode-eslint
+    - docker.docker
+    - eamodio.gitlens
+    - esbenp.prettier-vscode
+    - github.vscode-github-actions
+    - github.vscode-pull-request-github
+    - golang.go
+    - grafana.vscode-jsonnet
+    - hashicorp.terraform
+    - hbenl.vscode-test-explorer
+    - infeng.vscode-react-typescript
+    - jasonnutter.search-node-modules
+    - jawandarajbir.react-vscode-extension-pack
+    - mosapride.zenkaku
+    - ms-azuretools.vscode-containers
+    - ms-azuretools.vscode-docker
+    - ms-vscode.test-adapter-converter
+    - ms-vscode.vscode-typescript-next
+    - msoffice.microsoft-office-add-in-debugger
+    - openai.chatgpt
+    - openai.codex-audio
+    - redhat.vscode-yaml
+    - streetsidesoftware.code-spell-checker
+    - tomoki1207.pdf
+    - typescriptteam.native-preview
+    - vscodevim.vim
+    - xabikos.javascriptsnippets
+    - xabikos.reactsnippets
+    - yzhang.markdown-all-in-one
+  # 名前だけなら未導入のときに入れる。@ で版を指定したものは、その版でなければ入れ直す
+  npm:
+    - "@anthropic-ai/claude-code"
+    - "@commitlint/cli"
+    - "@commitlint/config-conventional"
+    - "@types/node"
+    - aws-cdk
+    - cdktf-cli
+    - corepack
+    - eslint
+    - git-cz
+    - npm
+    - prettier
+    - ts-node
+    - typescript
+    - yarn
+  # ~/.go/bin にコマンドがなければ go install する
+  go:
+    - github.com/go-delve/delve/cmd/dlv@latest
+    - github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    - golang.org/x/tools/cmd/goimports@latest
+    - github.com/fatih/gomodifytags@latest
+    - github.com/haya14busa/goplay/cmd/goplay@latest
+    - golang.org/x/tools/gopls@latest
+    - github.com/cweill/gotests/gotests@latest
+    - github.com/josharian/impl@latest
+    - github.com/mgechev/revive@latest
+    - honnef.co/go/tools/cmd/staticcheck@latest
+    - github.com/google/wire/cmd/wire@latest
+    - github.com/fe3dback/go-arch-lint@latest
+    - mvdan.cc/gofumpt@latest
+    - github.com/pressly/goose/v3/cmd/goose@latest
+    - github.com/securego/gosec/v2/cmd/gosec@latest
