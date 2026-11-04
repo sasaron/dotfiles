@@ -1,12 +1,12 @@
 #!/bin/bash
 # 新しい Mac の初回セットアップ。git がまだない状態でも動くように、リポジトリは
 # tarball で取得する。Homebrew のインストーラーが Command Line Tools を入れた後で、
-# 取得したディレクトリを git の作業コピーに変える。
+# 取得したディレクトリを git の作業コピーに変え、chezmoi で設定と導入手順を適用する。
 #
 #   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh)"
 #
 # curl ... | bash でも動くが、その場合は標準入力が端末ではないので、
-# install.sh には /dev/tty をつなぐ。
+# Homebrew のインストーラーと chezmoi には /dev/tty をつなぐ。
 set -euo pipefail
 
 repository_slug="sasaron/dotfiles"
@@ -78,21 +78,39 @@ prepare_destination() {
   download_tarball
 }
 
-run_setup() {
-  if [ ! -f "$destination/install.sh" ] || [ ! -f "$destination/bin/install-ai-skills.sh" ]; then
-    echo "Setup files are missing. Update the checkout after reviewing its local changes." >&2
-    exit 1
-  fi
-
-  echo "Running setup from $destination"
-  # Homebrew のインストーラーは標準入力が端末でないと非対話モードになり、sudo の
-  # パスワードを聞かずに失敗する。curl ... | bash で起動されたときは端末をつなぐ
+# Homebrew のインストーラーは標準入力が端末でないと非対話モードになり、sudo の
+# パスワードを聞かずに失敗する。curl ... | bash で起動されたときは端末をつなぐ
+with_tty() {
   if [ ! -t 0 ] && (: </dev/tty) 2>/dev/null; then
-    bash "$destination/install.sh" </dev/tty
+    "$@" </dev/tty
   else
-    bash "$destination/install.sh"
+    "$@"
   fi
-  bash "$destination/bin/install-ai-skills.sh"
+}
+
+load_brew() {
+  local prefix
+  command -v brew >/dev/null 2>&1 && return 0
+  for prefix in /opt/homebrew /usr/local; do
+    if [ -x "$prefix/bin/brew" ]; then
+      eval "$("$prefix/bin/brew" shellenv)"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Command Line Tools は Homebrew のインストーラーが softwareupdate で入れる
+install_homebrew() {
+  local installer
+  if load_brew; then
+    echo "Homebrew is already installed."
+    return
+  fi
+  echo "Installing Homebrew..."
+  installer="$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  with_tty /bin/bash -c "$installer"
+  load_brew || { echo "Homebrew was not found after installation." >&2; exit 1; }
 }
 
 # 取得した commit を HEAD にして、ファイルはそのまま index だけを合わせる
@@ -100,9 +118,9 @@ convert_to_checkout() {
   local commit
   [ -f "$destination/$marker" ] || return 0
   if ! has_git; then
-    echo "Git is still unavailable. Rerun this script after installing Command Line Tools" \
-      "to turn $destination into a Git checkout." >&2
-    return 0
+    echo "Git is still unavailable. Install Command Line Tools with xcode-select --install," \
+      "then rerun this script." >&2
+    exit 1
   fi
 
   commit="$(cat "$destination/$marker")"
@@ -119,6 +137,17 @@ convert_to_checkout() {
   echo "Converted $destination into a Git checkout of ${ref}."
 }
 
+# chezmoi.toml の sourceDir をこの作業コピーにして、設定と run_ スクリプトを適用する
+apply_chezmoi() {
+  if [ ! -f "$destination/.chezmoiroot" ]; then
+    echo "Setup files are missing. Update the checkout after reviewing its local changes." >&2
+    exit 1
+  fi
+  command -v chezmoi >/dev/null 2>&1 || brew install chezmoi
+  echo "Applying chezmoi source in $destination"
+  with_tty chezmoi init --apply --source "$destination"
+}
+
 main() {
   if [ "$(uname -s)" != Darwin ]; then
     echo "This setup currently supports macOS only." >&2
@@ -126,8 +155,9 @@ main() {
   fi
 
   prepare_destination
-  run_setup
+  install_homebrew
   convert_to_checkout
+  apply_chezmoi
   echo "Bootstrap complete. Restart your terminal."
 }
 

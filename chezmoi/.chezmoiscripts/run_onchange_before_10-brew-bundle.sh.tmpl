@@ -1,0 +1,17 @@
+#!/bin/bash
+# mac/Brewfile が変わるたびに不足しているパッケージを入れる。設定ファイルより先に
+# 実行し、starship や antidote などの依存を揃えておく。
+# Brewfile hash: {{ include (joinPath .chezmoi.workingTree "mac/Brewfile") | sha256sum }}
+set -euo pipefail
+
+if ! command -v brew >/dev/null 2>&1; then
+  for prefix in /opt/homebrew /usr/local; do
+    if [ -x "$prefix/bin/brew" ]; then
+      eval "$("$prefix/bin/brew" shellenv)"
+      break
+    fi
+  done
+fi
+command -v brew >/dev/null 2>&1 || { echo "Homebrew is missing; run bootstrap.sh first." >&2; exit 1; }
+
+{{ joinPath .chezmoi.workingTree "bin/manage-apps.sh" | quote }} install

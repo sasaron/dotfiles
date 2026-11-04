@@ -1,13 +1,13 @@
 # dotfiles
 
-macOS 用の個人設定ファイル。Homebrew でアプリを入れ、`install.sh` で設定ファイルを
-シンボリックリンクする。Starship の設定は chezmoi で管理する。
+macOS 用の個人設定ファイル。chezmoi でホームに設定ファイルを書き出し、
+Homebrew のパッケージや VS Code の拡張機能などの導入も chezmoi のスクリプトで行う。
 
 主な構成は次のとおり。
 
-- シェル：zsh、oh-my-zsh、antidote、Starship
+- シェル：zsh、antidote、Starship
 - ターミナル：zellij、herdr、iTerm
-- CLI：eza、bat、bottom、dust、duf
+- CLI：eza、bat、bottom、dust、duf、fzf
 - AI ツール：Claude Code と Codex のスキル、Claude Code の MCP 設定
 
 ## セットアップ
@@ -18,9 +18,9 @@ macOS 用の個人設定ファイル。Homebrew でアプリを入れ、`install
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh)"
 ```
 
-リポジトリを tarball で `~/src/github.com/sasaron/dotfiles` に取得し、`install.sh` を
-実行してから git の作業コピーに変える。途中で sudo のパスワードを聞かれる。
-実行前に中身を読みたい場合は、ファイルに保存してから実行する。
+リポジトリを tarball で `~/src/github.com/sasaron/dotfiles` に取得し、Homebrew を入れて
+git の作業コピーに変えてから、`chezmoi init --apply` を実行する。途中で sudo の
+パスワードを聞かれる。実行前に中身を読みたい場合は、ファイルに保存してから実行する。
 
 ```bash
 curl -fsSLo /tmp/dotfiles-bootstrap.sh https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh
@@ -28,30 +28,28 @@ less /tmp/dotfiles-bootstrap.sh
 bash /tmp/dotfiles-bootstrap.sh
 ```
 
-クローン済みなら `./bootstrap.sh` を実行する。リポジトリを更新した後は `./install.sh` で
-リンクを張り直す。
+## 日常の操作
 
-## 主なコマンド
+設定は `chezmoi/` の下のファイルを編集して、`chezmoi apply` でホームへ反映する。
+ホーム側のファイルを直接書き換えた場合は、`chezmoi re-add` でリポジトリに取り込む。
 
 | コマンド | 内容 |
 |---|---|
+| `chezmoi diff` | ホームとリポジトリの差分を見る |
+| `chezmoi apply` | 設定を反映し、変更のあった導入スクリプトを実行する |
+| `chezmoi re-add` | ホーム側で編集したファイルをリポジトリに取り込む |
 | `./bin/manage-apps.sh check` | Brewfile のうち未導入のアプリを確認する |
-| `./bin/manage-apps.sh install` | 不足しているアプリを入れる |
-| `python3 bin/environment.py apply` | `config/environment.json` の構成要素を適用する |
 | `python3 bin/sync-claude-mcp.py --apply` | Claude Code の MCP 設定を反映する |
-| `./bin/install-ai-skills.sh` | `skills/` を Claude Code と Codex にリンクする |
 | `python3 ./bin/export-ai-settings.py` | Claude と Codex の設定を `local/` へ export する |
-| `chezmoi --source "$PWD" apply` | Starship の設定を反映する |
 
 ## ディレクトリ
 
 | パス | 内容 |
 |---|---|
-| `config/` | `.zshrc`、`.vimrc`、VS Code、AI 設定 |
-| `home/` | zellij、herdr、commitlint などのアプリ設定 |
-| `chezmoi/` | chezmoi で管理する設定 |
+| `chezmoi/` | chezmoi のソース。ホームに置く設定ファイルと導入スクリプト |
 | `mac/` | Brewfile と npm パッケージ一覧 |
-| `bin/` | セットアップと運用のスクリプト |
+| `bin/` | 導入スクリプトから呼ぶ処理と、運用のスクリプト |
+| `config/` | AI 設定と `environment.json` |
 | `skills/` | Claude Code と Codex のスキル |
 | `docs/` | 運用の詳細と設計メモ |
 

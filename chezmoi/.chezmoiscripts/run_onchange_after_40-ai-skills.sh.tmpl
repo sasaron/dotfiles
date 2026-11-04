@@ -1,0 +1,6 @@
+#!/bin/bash
+# skills/ を Claude Code と Codex のユーザー用 skills にリンクする。既存の同名スキルは
+# 上書きしない。対象のスキル名はスクリプトに書いてあるので、スクリプトの変更で再実行する。
+# script hash: {{ include (joinPath .chezmoi.workingTree "bin/install-ai-skills.sh") | sha256sum }}
+set -euo pipefail
+{{ joinPath .chezmoi.workingTree "bin/install-ai-skills.sh" | quote }}
