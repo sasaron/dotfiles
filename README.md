@@ -12,7 +12,15 @@ macOS 用の個人設定ファイル。Homebrew でアプリを入れ、`install
 
 ## セットアップ
 
-新しい Mac では、スクリプトを取得して内容を確認してから実行する。
+新しい Mac では次の1行を実行する。git と Command Line Tools は事前に入れなくてよい。
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh)"
+```
+
+リポジトリを tarball で `~/src/github.com/sasaron/dotfiles` に取得し、`install.sh` を
+実行してから git の作業コピーに変える。途中で sudo のパスワードを聞かれる。
+実行前に中身を読みたい場合は、ファイルに保存してから実行する。
 
 ```bash
 curl -fsSLo /tmp/dotfiles-bootstrap.sh https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh

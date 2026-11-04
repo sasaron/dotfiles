@@ -6,9 +6,8 @@ if [ "$(uname)" != 'Darwin' ]; then
     exit 1
 fi
 
-# Install Xcode Command Line Tools
-echo "Installing Xcode Command Line Tools..."
-xcode-select --install || true
+# Command Line Tools は Homebrew のインストーラーが softwareupdate で入れる。
+# ここで xcode-select --install を呼ぶと、GUI のインストーラーが並行して開く
 
 # Install Homebrew if not already installed
 if ! command -v brew &> /dev/null; then

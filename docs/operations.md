@@ -5,12 +5,47 @@ README の各コマンドについて、挙動と注意点をまとめる。
 ## 初回セットアップ
 
 `bootstrap.sh` は Homebrew と Brewfile のパッケージ、シェル設定、エディター設定、
-AI スキルを設定し、`install.sh` 内の macOS 設定も実行する。
+AI スキルを設定し、`install.sh` 内の macOS 設定も実行する。GitHub に接続できる環境が必要。
 
-Xcode Command Line Tools が未導入ならインストール画面を開いて終了する。
-インストール後に `bash /tmp/dotfiles-bootstrap.sh` を再実行する。GitHub に接続できる
-環境が必要。既定の取得先は `~/src/github.com/sasaron/dotfiles` で、変更する場合は
-`DOTFILES_DIR=/path/to/dotfiles bash /tmp/dotfiles-bootstrap.sh` とする。
+新しい Mac には git がない。Command Line Tools が入るまで `/usr/bin/git` はインストールを
+促すスタブなので、`git clone` から始めることはできない。そこで次の順に進める。
+
+1. GitHub API で `main` の commit を調べ、その commit の tarball を取得先に展開する。
+   取得した commit は `.bootstrap-commit` に記録する。
+2. `install.sh` を実行する。Homebrew のインストーラーが、sudo が使える場合に
+   Command Line Tools を `softwareupdate` で入れる。
+3. git が使えるようになっていれば、取得先で `git init` し、`origin` を fetch して、
+   記録した commit に `git reset` する。ファイルは tarball のまま、index だけが合う。
+   最後に `.bootstrap-commit` を消す。
+
+途中で失敗した場合は、同じコマンドを再実行する。`.bootstrap-commit` があれば
+取得済みのファイルを使って続きから進める。git がまだ使えないときは手順 3 を飛ばして
+終わるので、Command Line Tools を入れてから再実行する。
+
+`curl ... | bash` の形でも動く。その場合は標準入力が端末ではないため、Homebrew の
+インストーラーが非対話モードになって sudo のパスワードを聞けない。これを避けるため、
+`install.sh` には `/dev/tty` をつないで実行する。ただし、端末から `curl ... | bash` で
+起動する経路は実機で試していない（2026-11-05 時点）。README の
+`/bin/bash -c "$(curl ...)"` は標準入力が端末のままなので、この問題が起きない。
+
+取得方法は次の公開リポジトリを参考にした（2026-11-05 確認）。
+
+- [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles)：git を使わない
+  インストールとして、tarball を `curl | tar` で展開する
+- [Homebrew/install](https://github.com/Homebrew/install)：ワンライナーを
+  `/bin/bash -c "$(curl -fsSL ...)"` の形にしている
+- [chezmoi](https://www.chezmoi.io/install/)：`sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply`
+  で取得と適用を1行で行う。このリポジトリは大半を `install.sh` で管理しているため採らなかった
+
+環境変数で次の値を変えられる。
+
+| 変数 | 既定値 | 内容 |
+|---|---|---|
+| `DOTFILES_DIR` | `~/src/github.com/sasaron/dotfiles` | 取得先 |
+| `DOTFILES_REF` | `main` | 取得するブランチ。作業ブランチを試すときに使う |
+
+取得先がすでにあり、`origin` がこのリポジトリの git 作業コピーなら、そのまま使う。
+それ以外のディレクトリがあれば何もせずに終了する。
 
 既存設定は `install.sh` のルールでバックアップし、同名の AI スキルは上書きしない。
 既存の dotfiles チェックアウトは自動更新しないため、必要なら変更を確認してから
