@@ -180,19 +180,6 @@ function hiscopy() {
     history | perl -anle 'print "@F[ 1..$#F ]"' | fzf | perl -ne 's/\n$//g;print' | pbcopy
 }
 
-# Taskwarrior aliases
-alias t="task"
-alias ta="task add"
-alias tl="task list"
-alias tc="task completed"
-alias tp="task projects"
-alias ts="task sync"
-alias td="task done"
-alias tm="task modify"
-alias tstart="task start"
-alias tstop="task stop"
-
-
 # Add Homebrew's site-functions to fpath for completions like AWS CLI
 if command -v brew &> /dev/null; then
   HOMEBREW_PREFIX=$(brew --prefix)
