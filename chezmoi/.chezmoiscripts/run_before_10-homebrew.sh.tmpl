@@ -7,6 +7,7 @@ command -v brew >/dev/null 2>&1 || { echo "Homebrew is missing; run bootstrap.sh
 
 brewfile={{ joinPath .chezmoi.workingTree "mac/Brewfile" | quote }}
 export HOMEBREW_NO_AUTO_UPDATE=1
-if ! brew bundle check --file="$brewfile" >/dev/null 2>&1; then
+# --no-upgrade がないと、古い版が入っているだけでも未充足と判定される
+if ! brew bundle check --no-upgrade --file="$brewfile" >/dev/null 2>&1; then
   brew bundle install --no-upgrade --file="$brewfile"
 fi

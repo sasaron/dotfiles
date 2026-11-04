@@ -2,38 +2,58 @@
 # Homebrew のパッケージは mac/Brewfile で管理する
 packages:
   vscode:
-    - amazonwebservices.aws-toolkit-vscode
-    - AmazonWebServices.codewhisperer-for-command-line
+    - aki77.ghq
+    - amazonwebservices.codewhisperer-for-command-line-companion
+    - anthropic.claude-code
+    - bierner.markdown-mermaid
+    - bufbuild.vscode-buf
+    - christian-kohler.npm-intellisense
+    - christian-kohler.path-intellisense
+    - dbaeumer.vscode-eslint
+    - docker.docker
+    - eamodio.gitlens
+    - esbenp.prettier-vscode
+    - github.vscode-github-actions
+    - github.vscode-pull-request-github
+    - golang.go
+    - grafana.vscode-jsonnet
+    - hashicorp.terraform
     - hbenl.vscode-test-explorer
+    - infeng.vscode-react-typescript
+    - jasonnutter.search-node-modules
+    - jawandarajbir.react-vscode-extension-pack
+    - mosapride.zenkaku
+    - ms-azuretools.vscode-containers
+    - ms-azuretools.vscode-docker
     - ms-vscode.test-adapter-converter
     - ms-vscode.vscode-typescript-next
     - msoffice.microsoft-office-add-in-debugger
+    - openai.chatgpt
+    - openai.codex-audio
     - redhat.vscode-yaml
-    - saoudrizwan.claude-dev
-    - dbaeumer.vscode-eslint
+    - streetsidesoftware.code-spell-checker
+    - tomoki1207.pdf
+    - typescriptteam.native-preview
     - vscodevim.vim
-    - eamodio.gitlens
-    - esbenp.prettier-vscode
-    - ms-azuretools.vscode-docker
-    - ms-vscode-remote.remote-containers
-    - ms-vscode-remote.remote-ssh
-    - ms-vscode-remote.remote-ssh-edit
-    - ms-vscode.remote-explorer
+    - xabikos.javascriptsnippets
+    - xabikos.reactsnippets
     - yzhang.markdown-all-in-one
-    - bierner.markdown-mermaid
   # 名前だけなら未導入のときに入れる。@ で版を指定したものは、その版でなければ入れ直す
   npm:
-    - npm
-    - yarn
-    - typescript
-    - "@types/node"
-    - ts-node
-    - eslint
-    - prettier
-    - aws-cdk@2.174.0
+    - "@anthropic-ai/claude-code"
     - "@commitlint/cli"
     - "@commitlint/config-conventional"
+    - "@types/node"
+    - aws-cdk
+    - cdktf-cli
+    - corepack
+    - eslint
     - git-cz
+    - npm
+    - prettier
+    - ts-node
+    - typescript
+    - yarn
   # ~/.go/bin にコマンドがなければ go install する
   go:
     - github.com/go-delve/delve/cmd/dlv@latest

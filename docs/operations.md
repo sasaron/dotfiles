@@ -17,7 +17,7 @@
 
 | スクリプト | 宣言の場所 | 状態の調べ方 |
 |---|---|---|
-| `before_10-homebrew` | `mac/Brewfile` | `brew bundle check`。不足があれば `brew bundle install --no-upgrade` |
+| `before_10-homebrew` | `mac/Brewfile` | `brew bundle check --no-upgrade`。不足があれば `brew bundle install --no-upgrade` |
 | `after_20-vscode-extensions` | `packages.yaml` の `vscode` | `code --list-extensions`（大文字と小文字を区別しない） |
 | `after_30-npm-packages` | `packages.yaml` の `npm` | `npm ls -g`。`@` で版を指定したものは版も比べる |
 | `after_35-go-tools` | `packages.yaml` の `go` | `~/.go/bin` にコマンドがあるか |
