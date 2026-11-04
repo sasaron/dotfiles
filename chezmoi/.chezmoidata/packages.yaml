@@ -1,0 +1,53 @@
+# chezmoi apply のたびに、ここにあって未導入のものだけを入れる。
+# Homebrew のパッケージは mac/Brewfile で管理する
+packages:
+  vscode:
+    - amazonwebservices.aws-toolkit-vscode
+    - AmazonWebServices.codewhisperer-for-command-line
+    - hbenl.vscode-test-explorer
+    - ms-vscode.test-adapter-converter
+    - ms-vscode.vscode-typescript-next
+    - msoffice.microsoft-office-add-in-debugger
+    - redhat.vscode-yaml
+    - saoudrizwan.claude-dev
+    - dbaeumer.vscode-eslint
+    - vscodevim.vim
+    - eamodio.gitlens
+    - esbenp.prettier-vscode
+    - ms-azuretools.vscode-docker
+    - ms-vscode-remote.remote-containers
+    - ms-vscode-remote.remote-ssh
+    - ms-vscode-remote.remote-ssh-edit
+    - ms-vscode.remote-explorer
+    - yzhang.markdown-all-in-one
+    - bierner.markdown-mermaid
+  # 名前だけなら未導入のときに入れる。@ で版を指定したものは、その版でなければ入れ直す
+  npm:
+    - npm
+    - yarn
+    - typescript
+    - "@types/node"
+    - ts-node
+    - eslint
+    - prettier
+    - aws-cdk@2.174.0
+    - "@commitlint/cli"
+    - "@commitlint/config-conventional"
+    - git-cz
+  # ~/.go/bin にコマンドがなければ go install する
+  go:
+    - github.com/go-delve/delve/cmd/dlv@latest
+    - github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    - golang.org/x/tools/cmd/goimports@latest
+    - github.com/fatih/gomodifytags@latest
+    - github.com/haya14busa/goplay/cmd/goplay@latest
+    - golang.org/x/tools/gopls@latest
+    - github.com/cweill/gotests/gotests@latest
+    - github.com/josharian/impl@latest
+    - github.com/mgechev/revive@latest
+    - honnef.co/go/tools/cmd/staticcheck@latest
+    - github.com/google/wire/cmd/wire@latest
+    - github.com/fe3dback/go-arch-lint@latest
+    - mvdan.cc/gofumpt@latest
+    - github.com/pressly/goose/v3/cmd/goose@latest
+    - github.com/securego/gosec/v2/cmd/gosec@latest

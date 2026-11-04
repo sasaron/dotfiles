@@ -1,0 +1,5 @@
+#!/bin/bash
+# config/ai/claude/mcp.json のサーバー定義を ~/.claude.json に統合する。
+# 差分がなければ何も書き込まない。既存のサーバーの認証やヘッダーは残る
+set -euo pipefail
+python3 {{ joinPath .chezmoi.workingTree "bin/sync-claude-mcp.py" | quote }} --apply

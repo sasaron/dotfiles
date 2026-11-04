@@ -1,9 +1,0 @@
-#!/bin/bash
-# 拡張機能の一覧はスクリプトに直接書いてあるので、スクリプトが変わったら入れ直す。
-# script hash: {{ include (joinPath .chezmoi.workingTree "bin/install-vscode-extensions.sh") | sha256sum }}
-set -euo pipefail
-if ! command -v code >/dev/null 2>&1; then
-  echo "VS Code CLI (code) is missing; skipping extensions." >&2
-  exit 0
-fi
-{{ joinPath .chezmoi.workingTree "bin/install-vscode-extensions.sh" | quote }}

@@ -1,9 +1,0 @@
-#!/bin/bash
-# mac/npm-packages.txt が変わったらグローバルの npm パッケージを入れ直す。
-# packages hash: {{ include (joinPath .chezmoi.workingTree "mac/npm-packages.txt") | sha256sum }}
-set -euo pipefail
-if ! command -v npm >/dev/null 2>&1; then
-  echo "npm is missing; skipping global npm packages." >&2
-  exit 0
-fi
-{{ joinPath .chezmoi.workingTree "bin/install-npm-packages.sh" | quote }}
