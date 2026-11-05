@@ -12,6 +12,14 @@ Node、Go、Python、Go 製ツールと開発用の CLI の版は mise で固定
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh)"
 ```
 
+Brewfile の cask のうち、別の手段で管理しているアプリは `HOMEBREW_BUNDLE_CASK_SKIP` に
+空白区切りで挙げると入れない。値は chezmoi の設定に残り、以後の apply でも飛ばす。
+
+```bash
+HOMEBREW_BUNDLE_CASK_SKIP="google-chrome slack claude" \
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh)"
+```
+
 その後は `chezmoi apply` で、リポジトリの内容を環境に反映する。何度実行してもよく、
 足りないものだけを入れる。途中で失敗したものは、次の `chezmoi apply` でやり直される。
 

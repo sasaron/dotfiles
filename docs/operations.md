@@ -41,6 +41,27 @@ Homebrew のスクリプトは設定ファイルより先に実行し、starship
 版を上げない（版を指定したものを除く）。mise のツールは `mise.lock` の版で入る。削除もしないので、一覧から外したものは
 手で消す。
 
+### Homebrew で入れない cask
+
+別の手段で入れて管理しているアプリは、`HOMEBREW_BUNDLE_CASK_SKIP` に cask 名を空白区切りで
+挙げると飛ばせる。`brew bundle` の `check` と `install` がこの環境変数を読む
+（Homebrew 7.0.12 の `Library/Homebrew/bundle/skipper.rb`、2026-11-05 確認）。
+`check` が飛ばした cask を不足と数えないことは、未導入の cask を挙げて実行して確かめた。
+
+`chezmoi init` のときにこの環境変数があれば、値を `~/.config/chezmoi/chezmoi.toml` の
+`data.brewCaskSkip` に書く。環境変数なしで init し直しても前回の値を残す。
+`before_10-homebrew` は、実行時に環境変数がなければこの値を使う。後から変えるときは
+`chezmoi.toml` を直接書き換える。
+
+```bash
+# 新しい Mac で、Chrome、Slack、Claude を Homebrew で入れない
+HOMEBREW_BUNDLE_CASK_SKIP="google-chrome slack claude" \
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh)"
+```
+
+`curl ... | bash` の形では、環境変数を `bash` の側に付ける
+（`curl ... | HOMEBREW_BUNDLE_CASK_SKIP="..." bash`）。
+
 ## 開発ツールのバージョン管理
 
 Go、開発で使う Node と Python、Go 製の開発ツールと、開発用の CLI（awscli、buf、cmake、
