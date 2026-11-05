@@ -1,0 +1,21 @@
+#!/bin/bash
+# config/mise/config.toml のツールを mise.lock の版で入れる。導入済みなら数ミリ秒で終わる。
+# ~/.config/mise は dot_config/symlink_mise.tmpl で作業ツリーへのリンクになっている
+set -uo pipefail
+{{ template "brew-env.sh" . }}
+if ! command -v mise >/dev/null 2>&1; then
+  echo "mise is missing; skipped mise tools until the next apply." >&2
+  exit 0
+fi
+mise install --locked || exit 1
+
+# mise のコマンドは Homebrew の site-functions に補完を置かないので、.zshrc の fpath にある
+# ディレクトリへ書き出す。版が変わっても追従するよう apply のたびに作り直す
+comp_dir="$HOME/.local/share/zsh/site-functions"
+mkdir -p "$comp_dir"
+failed=0
+for cmd in buf gitleaks; do
+  mise exec -- "$cmd" completion zsh >"$comp_dir/_$cmd.tmp" &&
+    mv "$comp_dir/_$cmd.tmp" "$comp_dir/_$cmd" || failed=1
+done
+exit "$failed"

@@ -1,7 +1,8 @@
 # dotfiles
 
 macOS 用の個人設定。ホームに置く設定ファイルと、Homebrew のパッケージ、VS Code の拡張機能、
-npm と Go のツール、AI スキル、Claude Code の MCP 設定を chezmoi で管理する。
+npm のパッケージ、AI スキル、Claude Code の MCP 設定を chezmoi で管理する。
+Node、Go、Python、Go 製ツールと開発用の CLI の版は mise で固定する。
 
 ## 適用
 
@@ -20,7 +21,8 @@ npm と Go のツール、AI スキル、Claude Code の MCP 設定を chezmoi �
 |---|---|
 | ホームの設定ファイル | `chezmoi/`（`dot_zshrc` が `~/.zshrc` になる） |
 | Homebrew のパッケージ | `mac/Brewfile` |
-| VS Code の拡張機能、npm と Go のツール | `chezmoi/.chezmoidata/packages.yaml` |
+| VS Code の拡張機能、npm のパッケージ | `chezmoi/.chezmoidata/packages.yaml` |
+| Node、Go、Python、Go 製ツール、開発用の CLI | `config/mise/config.toml` |
 | AI スキル | `skills/` |
 | Claude Code の MCP サーバー | `config/ai/claude/mcp.json` |
 

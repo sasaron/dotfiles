@@ -97,7 +97,8 @@ export EDITOR='vim'
 
 # Golang settings
 export GOPATH="$HOME"
-# ~/bin は chezmoi が管理するコマンドの置き場なので、Go ツールは別の場所に入れる
+# ~/bin は chezmoi が管理するコマンドの置き場なので、手で go install したものは別の場所に
+# 入れる。定常的に使う Go ツールは mise で管理する
 export GOBIN="$HOME/.go/bin"
 export PATH="$GOBIN:$GOPATH/bin:$PATH"
 
@@ -187,6 +188,9 @@ if command -v brew &> /dev/null; then
     fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
   fi
 fi
+# mise で入れたコマンド（buf、gitleaks）の補完。chezmoi apply の after_35-mise-tools が書き出す。
+# 起動のたびに生成すると 0.2 秒ほど遅くなるので、ファイルにしておく
+fpath=(~/.local/share/zsh/site-functions $fpath)
 
 # 補完機能を有効化。ダンプが24時間以内なら再生成と権限チェックを省く
 _init_completion() {
@@ -243,5 +247,12 @@ y() {
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 
-# mise (Ruby version manager)
+# mise。Node、Go、Python と Go 製ツールを入れる（config/mise/config.toml）。
+# PATH の先頭に足すので、Homebrew の同名コマンドより優先される
 eval "$(mise activate zsh)"
+
+# aws の補完は bash 形式の aws_completer を使う。mise activate で PATH が通ってから登録する
+if (( $+commands[aws_completer] )); then
+  autoload -Uz bashcompinit && bashcompinit
+  complete -C aws_completer aws
+fi

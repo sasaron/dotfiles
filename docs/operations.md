@@ -20,7 +20,7 @@
 | `before_10-homebrew` | `mac/Brewfile` | `brew bundle check --no-upgrade`。不足があれば `brew bundle install --no-upgrade` |
 | `after_20-vscode-extensions` | `packages.yaml` の `vscode` | `code --list-extensions`（大文字と小文字を区別しない） |
 | `after_30-npm-packages` | `packages.yaml` の `npm` | `npm ls -g`。`@` で版を指定したものは版も比べる |
-| `after_35-go-tools` | `packages.yaml` の `go` | `~/.go/bin` にコマンドがあるか |
+| `after_35-mise-tools` | `config/mise/config.toml` と `mise.lock` | `mise install --locked`。導入済みなら何もしない。buf と gitleaks の補完は毎回書き出す |
 | `after_40-ai-skills` | `skills/` | 各スキルへのリンクがあるか。別の内容を持つ同名は残す |
 | `after_45-claude-mcp` | `config/ai/claude/mcp.json` | `bin/sync-claude-mcp.py` が差分を調べる。差分がなければ書き込まない |
 | `after_50-macos-defaults` | スクリプト自身 | `defaults read` と `git config --get` の値 |
@@ -31,15 +31,60 @@ Homebrew のスクリプトは設定ファイルより先に実行し、starship
 再実行されない。コマンドがなかったときのスキップや一部の失敗が残るので、`run_` にした。
 
 1つでも導入に失敗したスクリプトは終了コードを非ゼロにする。chezmoi はそこで apply を止めるので、
-原因を直してもう一度 `chezmoi apply` を実行する。`code`、`npm`、`go` がまだないときは
+原因を直してもう一度 `chezmoi apply` を実行する。`code`、`npm`、`mise` がまだないときは
 警告だけを出して先へ進み、次の apply で入れる。
 
 導入済みのものを確かめるコマンドは apply のたびに動く。すべて揃っていても、
 `brew bundle check`、`code --list-extensions`、`npm ls -g` の分だけ時間がかかる。
 
-更新はしない。Homebrew は `--no-upgrade` で入れ、npm と Go のツールも、入っていれば
-版を上げない（版を指定した npm パッケージを除く）。削除もしないので、一覧から外したものは
+更新はしない。Homebrew は `--no-upgrade` で入れ、npm のパッケージも、入っていれば
+版を上げない（版を指定したものを除く）。mise のツールは `mise.lock` の版で入る。削除もしないので、一覧から外したものは
 手で消す。
+
+## 開発ツールのバージョン管理
+
+Go、開発で使う Node と Python、Go 製の開発ツールと、開発用の CLI（awscli、buf、cmake、
+gitleaks、grpcurl、protobuf）は mise で入れる。CLI は aqua バックエンドでビルド済みの
+バイナリを落とす。設定は
+[config/mise/config.toml](../config/mise/config.toml) にあり、解決した版とチェックサムは
+`config/mise/mise.lock` に残る。`chezmoi/dot_config/symlink_mise.tmpl` が `~/.config/mise` を
+このディレクトリへのリンクにする。
+
+```bash
+mise install --locked     # mise.lock の版で入れる（chezmoi apply でも実行される）
+mise lock --global        # config.toml にツールを足したあと lock を作り直す
+mise upgrade --bump       # 更新する。mise.lock の差分を確認して commit する
+```
+
+ほかの設定ファイルと違って実ファイルにせずリンクにしたのは、mise が `mise.lock` を
+`~/.config/mise/` に書き戻すため。実ファイルだと lock の更新がリポジトリに戻らない。
+mise 2026.9.8 で、`config.toml` だけをリンクすると `mise lock --global` は lock をリンク先では
+なく `~/.config/mise/` に書いた。グローバル設定に `lockfile = true` を書いても、
+`mise install` は lock を作らなかった（2026-11-05 確認）。そのためディレクトリごとリンクする。
+
+既存の Mac で `~/.config/mise` が通常のディレクトリになっていると、`chezmoi apply` は
+それを削除してリンクに置き換える。隔離した HOME で `--no-tty` を付けて試すと、確認なしで
+置き換わった（chezmoi v2.74.0、2026-11-05）。中の設定を残したいときは、apply の前に
+`chezmoi diff` で確かめて退避する。
+
+Homebrew の `node` と `uv` は残している。Claude デスクトップなどの GUI アプリは
+`mise activate` を通らずに MCP サーバー（`npx`、`uvx`）を起動するため、その経路用の既定として使う。
+シェルでは mise が PATH の先頭に入るので、`node` と `npx` は mise 版が見つかる。
+グローバルの npm パッケージ（`packages.yaml` の `npm`）は、`after_30-npm-packages` が
+Homebrew の Node に入れる。
+
+Homebrew で入れていたときは、awscli、buf、gitleaks の zsh 補完が Homebrew の site-functions に
+置かれていた。mise は補完を置かないので、次のように補う。buf と gitleaks は、
+`after_35-mise-tools` が `~/.local/share/zsh/site-functions/` に書き出し、`.zshrc` がそこを
+`fpath` に足す。起動のたびに `gitleaks completion zsh` を実行すると、シェルの起動が
+0.11 秒から 0.30 秒に延びたため（2026-11-05 計測）。awscli は bash 形式の `aws_completer` を
+`complete -C` で登録する。`compinit -C` はダンプが 24 時間以内なら作り直さないので、
+初回は補完が出ないことがある。そのときは `rm ~/.zcompdump` してシェルを開き直す。
+
+`go:` バックエンドは `go install -mod=readonly` でビルドする。goplay は v1.0.0 の go.mod に
+依存が足りずに失敗するため、一覧から外した。deno は `pdf-viewer` が aqua.yaml で版を固定しているので、グローバルには
+入れていない（Brewfile に残している）。golangci-lint は以前と同じモジュールパスに
+してあるので v1 系（v1.64.8）になる。
 
 ## 新しい Mac での bootstrap
 
