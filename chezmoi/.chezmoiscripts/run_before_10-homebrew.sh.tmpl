@@ -7,6 +7,9 @@ command -v brew >/dev/null 2>&1 || { echo "Homebrew is missing; run bootstrap.sh
 
 brewfile={{ joinPath .chezmoi.workingTree "mac/Brewfile" | quote }}
 export HOMEBREW_NO_AUTO_UPDATE=1
+# chezmoi.toml の brewCaskSkip に挙げた cask は check でも install でも飛ばす。
+# 実行時に HOMEBREW_BUNDLE_CASK_SKIP があればそちらを使う
+export HOMEBREW_BUNDLE_CASK_SKIP="${HOMEBREW_BUNDLE_CASK_SKIP:-{{ .brewCaskSkip | default "" }}}"
 # --no-upgrade がないと、古い版が入っているだけでも未充足と判定される
 if ! brew bundle check --no-upgrade --file="$brewfile" >/dev/null 2>&1; then
   brew bundle install --no-upgrade --file="$brewfile"

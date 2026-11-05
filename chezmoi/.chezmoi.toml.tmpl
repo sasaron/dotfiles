@@ -2,3 +2,12 @@
 # sourceDir を作業ツリーにしておくと、以後は --source なしで chezmoi apply できる。
 # 作業ツリーの .chezmoiroot が chezmoi/ を指すので、ソースはこのディレクトリになる
 sourceDir = {{ .chezmoi.workingTree | quote }}
+
+# Homebrew で入れない cask（空白区切り）。別の手段で管理しているアプリを外すのに使う。
+# init のときに環境変数 HOMEBREW_BUNDLE_CASK_SKIP があればその値を、なければ前回の値を残す。
+# 後から変えるときは ~/.config/chezmoi/chezmoi.toml を直接書き換える
+{{- $cask_skip := env "HOMEBREW_BUNDLE_CASK_SKIP" }}
+{{- if not $cask_skip }}{{ $cask_skip = get . "brewCaskSkip" | default "" }}{{ end }}
+
+[data]
+brewCaskSkip = {{ $cask_skip | quote }}
