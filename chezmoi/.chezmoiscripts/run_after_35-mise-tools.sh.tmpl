@@ -1,0 +1,10 @@
+#!/bin/bash
+# config/mise/config.toml のツールを mise.lock の版で入れる。導入済みなら数ミリ秒で終わる。
+# ~/.config/mise は dot_config/symlink_mise.tmpl で作業ツリーへのリンクになっている
+set -uo pipefail
+{{ template "brew-env.sh" . }}
+if ! command -v mise >/dev/null 2>&1; then
+  echo "mise is missing; skipped mise tools until the next apply." >&2
+  exit 0
+fi
+mise install --locked

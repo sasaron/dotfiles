@@ -1,16 +1,10 @@
 # dotfiles
 
-macOS 用の個人設定ファイル。Homebrew でアプリを、mise で Node、Go、Python を入れ、
-`install.sh` で設定ファイルをシンボリックリンクする。Starship の設定は chezmoi で管理する。
+macOS 用の個人設定。ホームに置く設定ファイルと、Homebrew のパッケージ、VS Code の拡張機能、
+npm のパッケージ、AI スキル、Claude Code の MCP 設定を chezmoi で管理する。
+Node、Go、Python と Go 製ツールの版は mise で固定する。
 
-主な構成は次のとおり。
-
-- シェル：zsh、oh-my-zsh、antidote、Starship
-- ターミナル：zellij、herdr、iTerm
-- CLI：eza、bat、bottom、dust、duf
-- AI ツール：Claude Code と Codex のスキル、Claude Code の MCP 設定
-
-## セットアップ
+## 適用
 
 新しい Mac では次の1行を実行する。git と Command Line Tools は事前に入れなくてよい。
 
@@ -18,44 +12,18 @@ macOS 用の個人設定ファイル。Homebrew でアプリを、mise で Node�
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh)"
 ```
 
-リポジトリを tarball で `~/src/github.com/sasaron/dotfiles` に取得し、`install.sh` を
-実行してから git の作業コピーに変える。途中で sudo のパスワードを聞かれる。
-実行前に中身を読みたい場合は、ファイルに保存してから実行する。
+その後は `chezmoi apply` で、リポジトリの内容を環境に反映する。何度実行してもよく、
+足りないものだけを入れる。途中で失敗したものは、次の `chezmoi apply` でやり直される。
 
-```bash
-curl -fsSLo /tmp/dotfiles-bootstrap.sh https://raw.githubusercontent.com/sasaron/dotfiles/main/bootstrap.sh
-less /tmp/dotfiles-bootstrap.sh
-bash /tmp/dotfiles-bootstrap.sh
-```
+## 編集する場所
 
-クローン済みなら `./bootstrap.sh` を実行する。リポジトリを更新した後は `./install.sh` で
-リンクを張り直す。
-
-## 主なコマンド
-
-| コマンド | 内容 |
+| 対象 | 場所 |
 |---|---|
-| `./bin/manage-apps.sh check` | Brewfile のうち未導入のアプリを確認する |
-| `./bin/manage-apps.sh install` | 不足しているアプリを入れる |
-| `python3 bin/environment.py apply` | `config/environment.json` の構成要素を適用する |
-| `python3 bin/sync-claude-mcp.py --apply` | Claude Code の MCP 設定を反映する |
-| `./bin/install-ai-skills.sh` | `skills/` を Claude Code と Codex にリンクする |
-| `python3 ./bin/export-ai-settings.py` | Claude と Codex の設定を `local/` へ export する |
-| `chezmoi --source "$PWD" apply` | Starship の設定を反映する |
-| `mise install --locked` | `home/mise/` の Node、Go、Python と Go ツールを入れる |
+| ホームの設定ファイル | `chezmoi/`（`dot_zshrc` が `~/.zshrc` になる） |
+| Homebrew のパッケージ | `mac/Brewfile` |
+| VS Code の拡張機能、npm のパッケージ | `chezmoi/.chezmoidata/packages.yaml` |
+| Node、Go、Python と Go 製ツール | `config/mise/config.toml` |
+| AI スキル | `skills/` |
+| Claude Code の MCP サーバー | `config/ai/claude/mcp.json` |
 
-## ディレクトリ
-
-| パス | 内容 |
-|---|---|
-| `config/` | `.zshrc`、`.vimrc`、VS Code、AI 設定 |
-| `home/` | zellij、herdr、mise、commitlint などのアプリ設定 |
-| `chezmoi/` | chezmoi で管理する設定 |
-| `mac/` | Brewfile と npm パッケージ一覧 |
-| `bin/` | セットアップと運用のスクリプト |
-| `skills/` | Claude Code と Codex のスキル |
-| `docs/` | 運用の詳細と設計メモ |
-
-各コマンドの挙動と注意点は [docs/operations.md](docs/operations.md)、
-管理方法の比較は [docs/environment-management.md](docs/environment-management.md)、
-MCP の構成は [docs/claude-mcp.md](docs/claude-mcp.md) にある。
+仕組みと注意点は [docs/operations.md](docs/operations.md) にある。

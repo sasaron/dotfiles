@@ -1,0 +1,28 @@
+#!/bin/bash
+# packages.npm のうち未導入のものをグローバルに入れる。apply のたびに実行するので、
+# npm がなかったときや失敗したときは次の apply でやり直す
+set -uo pipefail
+{{ template "brew-env.sh" . }}
+if ! command -v npm >/dev/null 2>&1; then
+  echo "npm is missing; skipped global npm packages until the next apply." >&2
+  exit 0
+fi
+
+packages=(
+{{- range .packages.npm }}
+  {{ . | quote }}
+{{- end }}
+)
+# --parseable --long の各行は <パス>:<名前>@<版>[:...] になる
+installed="$(npm ls -g --depth=0 --parseable --long 2>/dev/null | cut -d: -f2)"
+failed=0
+for package in "${packages[@]}"; do
+  # スコープの @ を除いた後ろに @ があれば、版を指定している
+  if [[ "${package:1}" == *@* ]]; then
+    grep -qxF "$package" <<<"$installed" && continue
+  else
+    grep -q "^${package}@" <<<"$installed" && continue
+  fi
+  npm install -g "$package" || failed=1
+done
+exit "$failed"

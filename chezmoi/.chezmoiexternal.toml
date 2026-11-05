@@ -1,0 +1,5 @@
+# vim-plug は1ファイルなので git を使わずに取得する。週に1回だけ取り直す
+[".vim/autoload/plug.vim"]
+type = "file"
+url = "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+refreshPeriod = "168h"

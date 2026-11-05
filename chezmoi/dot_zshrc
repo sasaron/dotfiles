@@ -97,8 +97,8 @@ export EDITOR='vim'
 
 # Golang settings
 export GOPATH="$HOME"
-# ~/bin はリポジトリの bin/ へのリンクなので、手で go install したものは別の場所に入れる。
-# 定常的に使う Go ツールは mise で管理する
+# ~/bin は chezmoi が管理するコマンドの置き場なので、手で go install したものは別の場所に
+# 入れる。定常的に使う Go ツールは mise で管理する
 export GOBIN="$HOME/.go/bin"
 export PATH="$GOBIN:$GOPATH/bin:$PATH"
 
@@ -222,9 +222,9 @@ if zle -la | grep -q '^history-substring-search-up$'; then
 fi
 
 # Added by Windsurf
-export PATH="/Users/sasakiry/.codeium/windsurf/bin:$PATH"
+export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
-alias claude="/Users/sasakiry/.claude/local/claude"
+alias claude="$HOME/.claude/local/claude"
 
 
 # yazi。終了時のディレクトリにシェルも移動する
@@ -244,6 +244,6 @@ y() {
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 
-# mise。Node、Go、Python と Go 製ツールを入れる（home/mise/config.toml）。
+# mise。Node、Go、Python と Go 製ツールを入れる（config/mise/config.toml）。
 # PATH の先頭に足すので、Homebrew の同名コマンドより優先される
 eval "$(mise activate zsh)"
