@@ -15,6 +15,15 @@ node = "24"
 go = "1.27"
 python = "3.13"
 
+# 開発用の CLI。どれもビルド済みのバイナリを落とす（aqua バックエンド）。
+# プロジェクトで版が要るときは、そのリポジトリの mise.toml で上書きする
+awscli = "2"
+buf = "1"
+cmake = "4"
+gitleaks = "8"
+grpcurl = "1"
+protobuf = "29"
+
 # 以前 packages.yaml の go にあった一覧。latest の解決結果は mise.lock に残る。
 # goplay は v1.0.0 の go.mod に依存が足りず、mise が付ける -mod=readonly では
 # ビルドできないので外した（2026-11-05 確認）。必要なら go install で入れる。

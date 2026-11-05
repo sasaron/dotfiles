@@ -20,7 +20,7 @@
 | `before_10-homebrew` | `mac/Brewfile` | `brew bundle check --no-upgrade`。不足があれば `brew bundle install --no-upgrade` |
 | `after_20-vscode-extensions` | `packages.yaml` の `vscode` | `code --list-extensions`（大文字と小文字を区別しない） |
 | `after_30-npm-packages` | `packages.yaml` の `npm` | `npm ls -g`。`@` で版を指定したものは版も比べる |
-| `after_35-mise-tools` | `config/mise/config.toml` と `mise.lock` | `mise install --locked`。導入済みなら何もしない |
+| `after_35-mise-tools` | `config/mise/config.toml` と `mise.lock` | `mise install --locked`。導入済みなら何もしない。buf と gitleaks の補完は毎回書き出す |
 | `after_40-ai-skills` | `skills/` | 各スキルへのリンクがあるか。別の内容を持つ同名は残す |
 | `after_45-claude-mcp` | `config/ai/claude/mcp.json` | `bin/sync-claude-mcp.py` が差分を調べる。差分がなければ書き込まない |
 | `after_50-macos-defaults` | スクリプト自身 | `defaults read` と `git config --get` の値 |
@@ -43,7 +43,9 @@ Homebrew のスクリプトは設定ファイルより先に実行し、starship
 
 ## 開発ツールのバージョン管理
 
-Go、開発で使う Node と Python、Go 製の開発ツールは mise で入れる。設定は
+Go、開発で使う Node と Python、Go 製の開発ツールと、開発用の CLI（awscli、buf、cmake、
+gitleaks、grpcurl、protobuf）は mise で入れる。CLI は aqua バックエンドでビルド済みの
+バイナリを落とす。設定は
 [config/mise/config.toml](../config/mise/config.toml) にあり、解決した版とチェックサムは
 `config/mise/mise.lock` に残る。`chezmoi/dot_config/symlink_mise.tmpl` が `~/.config/mise` を
 このディレクトリへのリンクにする。
@@ -71,8 +73,17 @@ Homebrew の `node` と `uv` は残している。Claude デスクトップな�
 グローバルの npm パッケージ（`packages.yaml` の `npm`）は、`after_30-npm-packages` が
 Homebrew の Node に入れる。
 
+Homebrew で入れていたときは、awscli、buf、gitleaks の zsh 補完が Homebrew の site-functions に
+置かれていた。mise は補完を置かないので、次のように補う。buf と gitleaks は、
+`after_35-mise-tools` が `~/.local/share/zsh/site-functions/` に書き出し、`.zshrc` がそこを
+`fpath` に足す。起動のたびに `gitleaks completion zsh` を実行すると、シェルの起動が
+0.11 秒から 0.30 秒に延びたため（2026-11-05 計測）。awscli は bash 形式の `aws_completer` を
+`complete -C` で登録する。`compinit -C` はダンプが 24 時間以内なら作り直さないので、
+初回は補完が出ないことがある。そのときは `rm ~/.zcompdump` してシェルを開き直す。
+
 `go:` バックエンドは `go install -mod=readonly` でビルドする。goplay は v1.0.0 の go.mod に
-依存が足りずに失敗するため、一覧から外した。golangci-lint は以前と同じモジュールパスに
+依存が足りずに失敗するため、一覧から外した。deno は `pdf-viewer` が aqua.yaml で版を固定しているので、グローバルには
+入れていない（Brewfile に残している）。golangci-lint は以前と同じモジュールパスに
 してあるので v1 系（v1.64.8）になる。
 
 ## 新しい Mac での bootstrap
