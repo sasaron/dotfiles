@@ -14,6 +14,8 @@ idiomatic_version_file_enable_tools = ["ruby"]
 node = "24"
 go = "1.27"
 python = "3.13"
+# リポジトリごとの道具の版は各リポジトリの aqua.yaml が決める（hakomichi-terraform など）
+aqua = "2.62.3"
 
 # 開発用の CLI。どれもビルド済みのバイナリを落とす（aqua バックエンド）。
 # プロジェクトで版が要るときは、そのリポジトリの mise.toml で上書きする
