@@ -1,0 +1,5 @@
+#!/bin/bash
+# config/ai/claude/settings.json の ask と deny の規則とフックを ~/.claude/settings.json に足す。
+# 足りないものだけを足し、手元の規則とフックは消さない。差分がなければ何も書き込まない
+set -euo pipefail
+python3 {{ joinPath .chezmoi.workingTree "bin/sync-claude-settings.py" | quote }} --apply

@@ -23,6 +23,7 @@
 | `after_35-mise-tools` | `config/mise/config.toml` と `mise.lock` | `mise install --locked`。導入済みなら何もしない。buf と gitleaks の補完は毎回書き出す |
 | `after_40-ai-skills` | `skills/` | 各スキルへのリンクがあるか。別の内容を持つ同名は残す |
 | `after_45-claude-mcp` | `config/ai/claude/mcp.json` | `bin/sync-claude-mcp.py` が差分を調べる。差分がなければ書き込まない |
+| `after_46-claude-settings` | `config/ai/claude/settings.json` の `permissions.ask`、`permissions.deny`、`hooks` | `bin/sync-claude-settings.py` が足りない規則とフックを調べる。差分がなければ書き込まない |
 | `after_50-macos-defaults` | スクリプト自身 | `defaults read` と `git config --get` の値 |
 
 Homebrew のスクリプトは設定ファイルより先に実行し、starship や antidote などの依存を揃える。
@@ -169,12 +170,30 @@ Codex の `config.toml` と `AGENTS.md` を、存在する分だけコピーす�
 - 履歴、セッション、キャッシュ
 - プラグイン本体と skills
 
-`config/ai/claude/settings.json` には model、effortLevel、verbose だけを書き出す。
+export は `config/ai/claude/settings.json` の model、effortLevel、verbose だけを書き換える。
 独自モデル名を含む可能性があるため、コミット前に差分を確認する。
 
 設定を丸ごと chezmoi で書き出すと、アプリからの書き戻しで秘密やマシン固有設定が Git へ
 混入し得る。そのため AI 設定は export 方式にして、自動では適用しない。認証は各端末でやり直す。
-MCP サーバーの定義だけは `mcp.json` から統合する。既存のサーバーの認証やヘッダーは残る。
+次のものだけは共有の宣言から統合する。どちらも足りないものを足すだけで、手元の設定は消さない。
+
+- MCP サーバーの定義（`mcp.json`）。既存のサーバーの認証やヘッダーは残る
+- 権限の `ask` と `deny`、フック（`settings.json`）。手で書き、export では書き換えない。
+  `allow` は端末とリポジトリごとに違い、手元のパスを含むので共有しない
+
+`deny` は、Claude が使わなくてよいものに限る。秘密の置き場所（`~/.ssh`、AWS と gh と
+Docker の認証、`~/.npmrc` など）の読み取り、`sudo`、ホームとルートの `rm -rf`、ディスクの消去、
+GitHub への公開（gist、issue、リポジトリの削除）を入れた。使うことはあるが取り返しにくいもの
+（`rm -rf`、force push、`git reset --hard`、PR のマージ、`terraform apply`、AWS の削除など）と、
+`.env` や鍵のファイルの読み取りは `ask` にした。
+
+規則は deny、ask、allow の順に照合され、allow で deny や ask の例外は作れない
+（[Configure permissions](https://code.claude.com/docs/en/permissions.md)）。
+ask は auto mode でも確認を求める。Bash の規則はコマンドの文面で照合するので、
+`/bin/rm` や `bash -c` で包んだ形は止まらない。`Read` の deny は Claude の道具と `cat` などの
+コマンドには効くが、スクリプトが自分で開くファイルには効かない。どちらも防御の境界ではない。
+
+フックは WebSearch の後に `web-grounding` スキルの手順を会話に入れる。
 
 ### Raycast と iTerm
 
