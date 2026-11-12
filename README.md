@@ -1,7 +1,7 @@
 # dotfiles
 
 macOS 用の個人設定。ホームに置く設定ファイルと、Homebrew のパッケージ、VS Code の拡張機能、
-npm のパッケージ、AI スキル、Claude Code の MCP 設定を chezmoi で管理する。
+npm のパッケージ、AI スキル、Claude Code の MCP と権限とフックの設定を chezmoi で管理する。
 Node、Go、Python、Go 製ツールと開発用の CLI の版は mise で固定する。
 
 ## 適用
@@ -33,5 +33,6 @@ HOMEBREW_BUNDLE_CASK_SKIP="google-chrome slack claude" \
 | Node、Go、Python、Go 製ツール、開発用の CLI | `config/mise/config.toml` |
 | AI スキル | `skills/` |
 | Claude Code の MCP サーバー | `config/ai/claude/mcp.json` |
+| Claude Code の権限の ask と deny、フック | `config/ai/claude/settings.json` |
 
 仕組みと注意点は [docs/operations.md](docs/operations.md) にある。

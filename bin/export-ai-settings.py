@@ -44,16 +44,19 @@ def main():
     target.write_text(json.dumps(mcp, indent=2) + "\n")
     target.chmod(0o600)
     print("Exported Claude MCP definitions (private)")
-  # Shared export intentionally excludes hooks, permissions, MCP, env and plugins.
-  shared = ROOT / "config" / "ai" / "claude"
+  # Only scalar preferences are exported. Shared permissions and hooks are written by hand
+  # and kept, because the user's own rules can hold private paths and commands.
+  shared = ROOT / "config" / "ai" / "claude" / "settings.json"
   source = args.home / ".claude" / "settings.json"
   if source.is_file():
     data = json.loads(source.read_text())
     keys = ("model", "effortLevel", "verbose")
     safe = {key: data[key] for key in keys
             if key in data and isinstance(data[key], (str, bool, int, float))}
-    shared.mkdir(parents=True, exist_ok=True)
-    (shared / "settings.json").write_text(json.dumps(safe, indent=2) + "\n")
+    kept = json.loads(shared.read_text()) if shared.is_file() else {}
+    kept = {k: v for k, v in kept.items() if k not in keys}
+    shared.parent.mkdir(parents=True, exist_ok=True)
+    shared.write_text(json.dumps({**safe, **kept}, indent=2, ensure_ascii=False) + "\n")
   print("Private backup:", dest)
   print("Review shared config/ai before committing; custom model names may be private.")
 
