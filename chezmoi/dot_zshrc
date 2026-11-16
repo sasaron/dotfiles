@@ -227,7 +227,8 @@ fi
 # Added by Windsurf
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
-alias claude="$HOME/.claude/local/claude"
+# Claude Code のネイティブインストーラーが入れる先（run_after_25-claude-code.sh）
+export PATH="$HOME/.local/bin:$PATH"
 
 
 # yazi。終了時のディレクトリにシェルも移動する

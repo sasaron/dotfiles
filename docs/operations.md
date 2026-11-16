@@ -19,6 +19,7 @@
 |---|---|---|
 | `before_10-homebrew` | `mac/Brewfile` | `brew bundle check --no-upgrade`。不足があれば `brew bundle install --no-upgrade` |
 | `after_20-vscode-extensions` | `packages.yaml` の `vscode` | `code --list-extensions`（大文字と小文字を区別しない） |
+| `after_25-claude-code` | スクリプト自身 | `~/.local/bin/claude` があるか。なければ公式の `install.sh` を実行する。更新は Claude Code の自動更新に任せる |
 | `after_30-npm-packages` | `packages.yaml` の `npm` | `npm ls -g`。`@` で版を指定したものは版も比べる |
 | `after_35-mise-tools` | `config/mise/config.toml` と `mise.lock` | `mise install --locked`。導入済みなら何もしない。buf と gitleaks の補完は毎回書き出す |
 | `after_40-ai-skills` | `skills/` | 各スキルへのリンクがあるか。別の内容を持つ同名は残す |
