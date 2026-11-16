@@ -257,3 +257,10 @@ if (( $+commands[aws_completer] )); then
   autoload -Uz bashcompinit && bashcompinit
   complete -C aws_completer aws
 fi
+
+# aws-sso の補完と aws-sso-profile、aws-sso-clear の関数。aws-sso setup completions --install は
+# ~/.zshrc に同じ内容を書き込むが、chezmoi の apply で消えるので起動のたびに読み込む。
+# 中の complete は、上の aws の補完で有効にした bashcompinit が定義する
+if (( $+commands[aws-sso] && $+functions[complete] )); then
+  eval "$(aws-sso setup completions --source --shell zsh)"
+fi
