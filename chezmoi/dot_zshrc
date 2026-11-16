@@ -227,7 +227,8 @@ fi
 # Added by Windsurf
 export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
-alias claude="$HOME/.claude/local/claude"
+# Claude Code のネイティブインストーラーが入れる先（run_after_25-claude-code.sh）
+export PATH="$HOME/.local/bin:$PATH"
 
 
 # yazi。終了時のディレクトリにシェルも移動する
@@ -255,4 +256,11 @@ eval "$(mise activate zsh)"
 if (( $+commands[aws_completer] )); then
   autoload -Uz bashcompinit && bashcompinit
   complete -C aws_completer aws
+fi
+
+# aws-sso の補完と aws-sso-profile、aws-sso-clear の関数。aws-sso setup completions --install は
+# ~/.zshrc に同じ内容を書き込むが、chezmoi の apply で消えるので起動のたびに読み込む。
+# 中の complete は、上の aws の補完で有効にした bashcompinit が定義する
+if (( $+commands[aws-sso] && $+functions[complete] )); then
+  eval "$(aws-sso setup completions --source --shell zsh)"
 fi

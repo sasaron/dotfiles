@@ -40,7 +40,6 @@ packages:
     - yzhang.markdown-all-in-one
   # 名前だけなら未導入のときに入れる。@ で版を指定したものは、その版でなければ入れ直す
   npm:
-    - "@anthropic-ai/claude-code"
     - "@commitlint/cli"
     - "@commitlint/config-conventional"
     - "@types/node"
