@@ -4,24 +4,32 @@
 # 使い方: nvim-open <path> [line]
 set -eu
 
-# nvim が終わった後に、右ペインのセッション自身を閉じる。プロファイルの
-# 「セッション終了時」が閉じない設定でもペインが残らないようにする
-if [ "${1:-}" = "--close-self" ]; then
-  osascript - "${ITERM_SESSION_ID#*:}" <<'APPLESCRIPT' >/dev/null 2>&1 || true
-on run argv
+# AppleScript は入れ子の repeat しか書けないので、セッションを探す処理を1か所にまとめる。
+# unique id が一致するセッションの {window, tab, session} を返す。なければ missing value
+FIND_SESSION='on find_session(target_id)
   tell application "iTerm"
     repeat with w in windows
       repeat with t in tabs of w
         repeat with s in sessions of t
-          if (unique id of s) is (item 1 of argv) then
-            tell s to close
-            return
-          end if
+          if (unique id of s) is target_id then return {w, t, s}
         end repeat
       end repeat
     end repeat
   end tell
+  return missing value
+end find_session'
+
+# nvim が終わった後に、右ペインのセッション自身を閉じる。プロファイルの
+# 「セッション終了時」が閉じない設定でもペインが残らないようにする
+if [ "${1:-}" = "--close-self" ]; then
+  osascript - "${ITERM_SESSION_ID#*:}" <<APPLESCRIPT >/dev/null 2>&1 || true
+on run argv
+  tell application "iTerm"
+    set found to my find_session(item 1 of argv)
+    if found is not missing value then tell (item 3 of found) to close
+  end tell
 end run
+$FIND_SESSION
 APPLESCRIPT
   exit 0
 fi
@@ -58,24 +66,18 @@ quote() {
 # 右ペインの iTerm セッションにフォーカスを移す。消えていても無視する
 focus_side_pane() {
   [ -s "$id_file" ] || return 0
-  osascript - "$(cat "$id_file")" <<'APPLESCRIPT' >/dev/null 2>&1 || true
+  osascript - "$(cat "$id_file")" <<APPLESCRIPT >/dev/null 2>&1 || true
 on run argv
   tell application "iTerm"
     activate
-    repeat with w in windows
-      repeat with t in tabs of w
-        repeat with s in sessions of t
-          if (unique id of s) is (item 1 of argv) then
-            select w
-            tell t to select
-            tell s to select
-            return
-          end if
-        end repeat
-      end repeat
-    end repeat
+    set found to my find_session(item 1 of argv)
+    if found is missing value then return
+    select item 1 of found
+    tell item 2 of found to select
+    tell item 3 of found to select
   end tell
 end run
+$FIND_SESSION
 APPLESCRIPT
 }
 
