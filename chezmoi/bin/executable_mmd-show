@@ -1,0 +1,25 @@
+#!/bin/sh
+# mermaid（.mmd）を画像にして、iTerm の中にそのまま表示する。
+# Markdown に埋めた mermaid は、nvim のインライン表示（snacks.nvim）を使う。
+# 使い方: mmd-show <file.mmd>
+# iTerm 独自の OSC 1337 で表示する。tmux や zellij の中では表示されない。
+set -eu
+
+src="${1:-}"
+if [ -z "$src" ] || [ ! -f "$src" ]; then
+  echo "usage: mmd-show <file.mmd>" >&2
+  exit 1
+fi
+if ! command -v mmdc >/dev/null 2>&1; then
+  echo "mmd-show: mmdc がない（npm の @mermaid-js/mermaid-cli）" >&2
+  exit 1
+fi
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+mmdc -q -i "$src" -o "$tmp/out.png" -b white -s 2
+
+# \033]1337;File=inline=1;width=auto:<base64>\a
+printf '\033]1337;File=inline=1;preserveAspectRatio=1:'
+base64 <"$tmp/out.png" | tr -d '\n'
+printf '\a\n'

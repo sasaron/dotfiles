@@ -208,3 +208,85 @@ Git 管理外の安全な場所へ保存する。
 iTerm は、`bin/export-iterm-settings.sh` で現在の preferences plist を `local/iterm/`
 （Git 管理外）へバックアップできる。iTerm の全データの完全なバックアップではなく、
 アプリ起動中の変更は最新状態になっていない場合がある。
+
+### iTerm から nvim でファイルを開く
+
+`~/bin/nvim-open <path> [line]` は、ファイルを iTerm の右側の分割ペインの nvim で開く。
+Claude Code が表示したファイルパス（`src/a.ts:42` の形を含む）を Cmd+クリックして
+nvim で開くために使う。右ペインの nvim は `~/.cache/nvim-open/nvim.sock` で待ち受け、
+2 回目以降のクリックは同じ nvim で開いてペインにフォーカスを移す（ペインは増えない）。
+右ペインの nvim を閉じるとペインも閉じ、次のクリックで分割し直す。
+nvim は Brewfile で入り、`EDITOR` と `VISUAL` も nvim になるので、Claude Code の
+Ctrl+G（入力欄を外部エディタで編集）も nvim で開く。
+
+iTerm の設定は自動では適用しない（設定の実体は plist で、機密を含むためリポジトリに入れない。
+後述の「iTerm の設定の export と import」を参照）。デフォルトのプロファイルに、
+Settings の Profiles、Advanced、Semantic History で次のとおり設定する。日本語 UI では
+「設定」の「プロファイル」、プロファイル内のタブ「詳細」、「セマンティック履歴」にある
+（「設定」直下のタブ「詳細設定」は別物）。
+
+1. 左のプルダウンを「Run command...」にする（日本語 UI では「コマンドを実行…」）
+2. 右の欄に次を入れる。`~` は展開されない可能性があるため、絶対パスにする
+
+   ```text
+   /Users/<user>/bin/nvim-open "\1" "\2"
+   ```
+
+   `\1` がファイル名、`\2` が行番号。iTerm 3.7.7 の画面上の説明で確認した
+3. 初回は、iTerm が Automation（iTerm の操作）の許可を求める場合がある
+
+差分は `git difftool -t nvimdiff` で nvim の diff モードで見られる。
+
+確認済みなのは、既存の nvim サーバーへ開く側（スペースと単引用符を含むパスで、行番号まで
+移動する。2026-11-19、headless の nvim）。iTerm を分割する側と、Cmd+クリックからの呼び出しは
+未確認。実機では、右に分割されること、2 回目で同じペインに開くことを確認する。
+
+### nvim で Markdown、Mermaid、Go、TypeScript を見る
+
+設定は `config/nvim/init.lua` にあり、chezmoi が `~/.config/nvim` へリンクする。
+プラグインは lazy.nvim で入れ、版は `config/nvim/lazy-lock.json` で固定する。
+更新は nvim で `:Lazy update` を実行し、lazy-lock.json の差分を commit する。
+
+| 用途 | 手段 | 外部コマンドの入れ先 |
+|---|---|---|
+| Markdown の整形表示 | render-markdown.nvim（nvim の中で描画。ブラウザは開かない） | なし |
+| Mermaid、画像のインライン表示 | snacks.nvim の image。mermaid は `mmdc` で PNG にする | `imagemagick` は Brewfile、`@mermaid-js/mermaid-cli` は packages.yaml の npm |
+| Go | gopls（`gd` で定義、`gr` で参照） | mise（config/mise/config.toml） |
+| TypeScript | `tsc --lsp`（TypeScript 7 以降） | packages.yaml の npm の `typescript` |
+| 構文解析 | nvim-treesitter（初回起動時にパーサをコンパイルする） | `tree-sitter-cli` は Brewfile |
+
+TypeScript の LSP に typescript-language-server を使わないのは、TypeScript 7.0.2 の
+`lib` に `tsserver.js` がなく、server 6.1.0 が「Could not find a valid TypeScript
+installation」で初期化に失敗したため（2026-11-19、この Mac で確認）。
+
+snacks.nvim の対応端末は kitty、ghostty、wezterm で、iTerm は自動では認識されない
+（ソースの `lua/snacks/image/terminal.lua`、2026-11-19 確認）。iTerm 3.7.7 は kitty
+graphics protocol に対応しているため、init.lua は iTerm のときだけ `SNACKS_KITTY=true`
+を設定して kitty として扱わせる。tmux と zellij の中では設定しない。
+
+`mmd-show file.mmd` は、mermaid を PNG にして iTerm の OSC 1337 で表示する。nvim の
+インライン表示が使えないときの代替で、tmux と zellij の中では表示されない。
+
+確認済みなのは、headless の nvim で gopls と `tsc --lsp` が attach して定義ジャンプが
+1 件返ること、Markdown の mermaid ブロックが snacks 経由で PNG になること、
+`mmd-show` が OSC 1337 を出力すること。実機の iTerm 上の見た目は未確認で、
+次を確かめる。herdr の中で画像が通るかも未確認。
+
+1. `.md` を nvim で開き、見出しやコードブロックが整形され、カーソル行で生の表示に戻る
+2. mermaid の fenced block が、インライン画像として表示される
+3. 表示されなければ `:checkhealth snacks` を見る
+
+新しい Mac では mmdc が使う Chrome が必要になる。mermaid-cli の puppeteer は postinstall
+で Chrome を取得するが、npm の `allowScripts` に止められた場合は
+`npx puppeteer browsers install chrome-headless-shell` で入れる。
+
+### iTerm の設定の export と import
+
+この Mac の iTerm は、Settings の General → Settings で「Load settings from a custom
+folder」が有効で、`~/Documents/iTerm2` の plist を読み書きしている（2026-11-19 確認）。
+別の Mac へ移すときは、同じ設定でフォルダを指定すれば、プロファイルを含む全設定が入る。
+このフォルダの plist には本番環境のホスト名やトリガーが入るため、リポジトリ（PUBLIC）には
+入れない。このフォルダが iCloud などで同期されているかは未確認。移すときは、手でコピーするか別の安全な場所に置く。
+
+Semantic History などの設定は、この plist に保存される。変更したら
+`bin/export-iterm-settings.sh` で `local/iterm/`（Git 管理外）にバックアップする。

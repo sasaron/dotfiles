@@ -42,6 +42,7 @@ packages:
   npm:
     - "@commitlint/cli"
     - "@commitlint/config-conventional"
+    - "@mermaid-js/mermaid-cli"
     - "@types/node"
     - aws-cdk
     - cdktf-cli

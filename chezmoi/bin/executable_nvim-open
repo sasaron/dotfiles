@@ -1,0 +1,97 @@
+#!/bin/sh
+# iTerm の Semantic History（Cmd+クリック）から呼ばれ、ファイルを右側の分割ペインの nvim で開く。
+# 右ペインの nvim が生きていれば、そこで開いてフォーカスを移す。なければ右に分割して起動する。
+# 使い方: nvim-open <path> [line]
+set -eu
+
+path="${1:-}"
+line="${2:-}"
+if [ -z "$path" ]; then
+  echo "nvim-open: path が必要" >&2
+  exit 1
+fi
+if [ ! -e "$path" ]; then
+  echo "nvim-open: 存在しない: $path" >&2
+  exit 1
+fi
+
+# Semantic History は PATH が最小のことがあるので、nvim の場所を補う
+PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+if ! command -v nvim >/dev/null 2>&1; then
+  echo "nvim-open: nvim が見つからない" >&2
+  exit 1
+fi
+
+state="${XDG_CACHE_HOME:-$HOME/.cache}/nvim-open"
+sock="$state/nvim.sock"
+id_file="$state/session-id"
+mkdir -p "$state"
+chmod 700 "$state"
+
+# シェルに渡す文字列用に単引用符で囲む
+quote() {
+  printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"
+}
+
+# 右ペインの iTerm セッションにフォーカスを移す。消えていても無視する
+focus_side_pane() {
+  [ -s "$id_file" ] || return 0
+  osascript - "$(cat "$id_file")" <<'APPLESCRIPT' >/dev/null 2>&1 || true
+on run argv
+  tell application "iTerm"
+    activate
+    repeat with w in windows
+      repeat with t in tabs of w
+        repeat with s in sessions of t
+          if (unique id of s) is (item 1 of argv) then
+            select w
+            tell t to select
+            tell s to select
+            return
+          end if
+        end repeat
+      end repeat
+    end repeat
+  end tell
+end run
+APPLESCRIPT
+}
+
+if [ -S "$sock" ] && nvim --server "$sock" --remote-expr 1 >/dev/null 2>&1; then
+  nvim --server "$sock" --remote "$path"
+  case "$line" in
+    ''|*[!0-9]*) ;;
+    *) nvim --server "$sock" --remote-send "<C-\\><C-n>${line}Gzz" ;;
+  esac
+  focus_side_pane
+  exit 0
+fi
+
+rm -f "$sock"
+cmd="nvim --listen $(quote "$sock")"
+case "$line" in
+  ''|*[!0-9]*) ;;
+  *) cmd="$cmd +$line" ;;
+esac
+# exec にして、nvim を閉じたらペインも閉じる
+cmd="cd $(quote "$(dirname "$path")") && exec $cmd $(quote "$path")"
+
+session_id="$(osascript - "$cmd" <<'APPLESCRIPT'
+on run argv
+  tell application "iTerm"
+    activate
+    if (count of windows) = 0 then
+      create window with default profile
+      set side to current session of current window
+    else
+      tell current session of current window
+        set side to (split vertically with default profile)
+      end tell
+    end if
+    tell side to write text (item 1 of argv)
+    return unique id of side
+  end tell
+end run
+APPLESCRIPT
+)"
+printf '%s\n' "$session_id" >"$id_file"

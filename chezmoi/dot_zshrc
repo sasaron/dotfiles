@@ -93,7 +93,13 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*:manuals' separate-sections true
 
 # Preferred editor for local and remote sessions
-export EDITOR='vim'
+if command -v nvim >/dev/null 2>&1; then
+  export EDITOR='nvim'
+  alias vim='nvim'
+else
+  export EDITOR='vim'
+fi
+export VISUAL="$EDITOR"
 
 # Golang settings
 export GOPATH="$HOME"

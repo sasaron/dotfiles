@@ -11,6 +11,11 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall | source $MYVIMRC
 endif
 
+" 足りないプラグインを起動時に入れる
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | source $MYVIMRC
+\| endif
+
 call plug#begin('~/.vim/plugged')
 
 " Plugins managed by vim-plug
@@ -111,7 +116,7 @@ set background=dark
 autocmd ColorScheme * highlight Normal ctermbg=none
 autocmd ColorScheme * highlight LineNr ctermbg=none
 " colorscheme molokai
-colorscheme gruvbox
+silent! colorscheme gruvbox
 " シンタックスハイライト
 syntax on
 " screen 256色対応
@@ -185,7 +190,7 @@ function! LightlineReadonly()
 endfunction
 
 function! LightlineFugitive()
-  return exists('*fugitive#head') ? fugitive#head() : ''
+  return exists('*FugitiveHead') ? FugitiveHead() : ''
 endfunction
 
 function! LightlineFilename()
@@ -221,7 +226,6 @@ let g:lightline.colorscheme = 'gruvbox'
 
 " 常にtabを表示
 set showtabline=2
-set tabline=%!MyTabLine()
 hi Normal ctermfg=white
 
 " go-linterとsyntasticの設定 goのチェック
@@ -254,8 +258,6 @@ inoremap <C-]> <ESC>g<C-]>
 nnoremap <silent><Leader><C-]> <C-w><C-]><C-w>T
 nnoremap <C-]> :tab sp<CR> :exe("tjump ".expand('<cword>'))<CR>
 
-" Command to update all plugins
-command! PlugUpdate call plug#update()
 
 set encoding=utf-8
 set fileencodings=utf-8
