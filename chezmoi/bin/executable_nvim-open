@@ -4,6 +4,28 @@
 # 使い方: nvim-open <path> [line]
 set -eu
 
+# nvim が終わった後に、右ペインのセッション自身を閉じる。プロファイルの
+# 「セッション終了時」が閉じない設定でもペインが残らないようにする
+if [ "${1:-}" = "--close-self" ]; then
+  osascript - "${ITERM_SESSION_ID#*:}" <<'APPLESCRIPT' >/dev/null 2>&1 || true
+on run argv
+  tell application "iTerm"
+    repeat with w in windows
+      repeat with t in tabs of w
+        repeat with s in sessions of t
+          if (unique id of s) is (item 1 of argv) then
+            tell s to close
+            return
+          end if
+        end repeat
+      end repeat
+    end repeat
+  end tell
+end run
+APPLESCRIPT
+  exit 0
+fi
+
 path="${1:-}"
 line="${2:-}"
 if [ -z "$path" ]; then
@@ -73,8 +95,8 @@ case "$line" in
   ''|*[!0-9]*) ;;
   *) cmd="$cmd +$line" ;;
 esac
-# exec にして、nvim を閉じたらペインも閉じる
-cmd="cd $(quote "$(dirname "$path")") && exec $cmd $(quote "$path")"
+# nvim を閉じたら、このスクリプトの --close-self でペインを閉じる
+cmd="cd $(quote "$(dirname "$path")") && $cmd $(quote "$path"); $(quote "$0") --close-self"
 
 session_id="$(osascript - "$cmd" <<'APPLESCRIPT'
 on run argv
