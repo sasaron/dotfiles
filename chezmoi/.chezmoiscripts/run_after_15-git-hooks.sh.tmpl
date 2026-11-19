@@ -1,0 +1,20 @@
+#!/bin/bash
+# このリポジトリの .githooks を git の hook に使う。core.hooksPath が違うときだけ書く。
+# .git/hooks の中身（git-secrets など）は .githooks に移してあるので、置き換えて問題ない
+set -euo pipefail
+repo={{ .chezmoi.workingTree | quote }}
+want=".githooks"
+
+if ! git -C "$repo" rev-parse --git-dir >/dev/null 2>&1; then
+  echo "git-hooks: $repo は git リポジトリではない" >&2
+  exit 1
+fi
+current="$(git -C "$repo" config --local --get core.hooksPath || true)"
+if [ "$current" != "$want" ]; then
+  git -C "$repo" config --local core.hooksPath "$want"
+  echo "git-hooks: core.hooksPath を $want にした"
+fi
+# 実行ビットが落ちた hook は git が黙って無視するので、毎回確かめる
+for hook in "$repo/$want"/*; do
+  [ -x "$hook" ] || chmod +x "$hook"
+done

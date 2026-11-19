@@ -21,6 +21,13 @@
 - `config/`: AI settings, including the Claude Code MCP servers
 - `mac/`: Brewfile
 
+## Commit Messages
+- Use Conventional Commits: `type(scope): subject`, with the types in
+  `chezmoi/dot_config/commitlint/commitlint.config.js`. Keep the first line under 73 characters
+  and do not capitalize its first word
+- The `.githooks/commit-msg` hook runs commitlint and git-secrets; `chezmoi apply` enables the
+  hooks through `core.hooksPath`
+
 ## Error Handling
 - Add error checking for critical operations
 - Use set -e for important scripts to fail fast

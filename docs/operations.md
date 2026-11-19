@@ -18,6 +18,7 @@
 | スクリプト | 宣言の場所 | 状態の調べ方 |
 |---|---|---|
 | `before_10-homebrew` | `mac/Brewfile` | `brew bundle check --no-upgrade`。不足があれば `brew bundle install --no-upgrade` |
+| `after_15-git-hooks` | `.githooks/` | `core.hooksPath` がリポジトリの `.githooks` か。違うときだけ書き、hook の実行ビットも確かめる |
 | `after_20-vscode-extensions` | `packages.yaml` の `vscode` | `code --list-extensions`（大文字と小文字を区別しない） |
 | `after_25-claude-code` | スクリプト自身 | `~/.local/bin/claude` があるか。なければ公式の `install.sh` を実行する。更新は Claude Code の自動更新に任せる |
 | `after_30-npm-packages` | `packages.yaml` の `npm` | `npm ls -g`。`@` で版を指定したものは版も比べる |
@@ -290,3 +291,32 @@ folder」が有効で、`~/Documents/iTerm2` の plist を読み書きしてい�
 
 Semantic History などの設定は、この plist に保存される。変更したら
 `bin/export-iterm-settings.sh` で `local/iterm/`（Git 管理外）にバックアップする。
+
+### コミットの規約と hook
+
+コミットメッセージは Conventional Commits にする。`type(scope): subject` の形で、`scope` は省略できる。
+規則は `chezmoi/dot_config/commitlint/commitlint.config.js` にある。
+
+- type は `build`、`chore`、`ci`、`docs`、`feat`、`fix`、`perf`、`refactor`、`revert`、`style`、`test`
+- subject は空にせず、先頭を大文字にせず、末尾にピリオドを付けない。`Neovim` のような固有名詞は途中なら使える。日本語でもよい
+- 1 行目は 72 文字まで。本文と脚注の前は空行を空ける
+
+hook は `.githooks/` にあり、`after_15-git-hooks` が `core.hooksPath` で有効にする。
+
+| hook | 内容 |
+|---|---|
+| `pre-commit` | git-secrets でステージした内容を調べる |
+| `prepare-commit-msg` | git-secrets |
+| `commit-msg` | git-secrets と commitlint。commitlint がなければ警告して通す |
+
+`core.hooksPath` を使うと `.git/hooks` の中身は呼ばれなくなる。以前の `.git/hooks` は git-secrets の
+3 つだけで、`.githooks` に移してある。GitHub のマージコミット（`Merge pull request ...`）は
+commitlint の既定で対象外になる。
+
+規則は 2026-11-20 に commitlint 19.8.0 で試した。`feat(nvim): add a Neovim config` は通り、
+`Add a Neovim config`（type なし）、`docs: Update operations`（先頭が大文字）、末尾のピリオド、
+73 文字以上の 1 行目は拒否される。それ以前の履歴は英語の命令形で type がなく、書き換えない。
+
+config の `extends: ['@commitlint/config-conventional']` は使わない。commitlint は extends を
+設定ファイルの場所から解決し、`~/.config/commitlint` からは見つからず、設定が読めないまま
+規約が効いていなかったため、規則をすべて書いた。

@@ -1,0 +1,4 @@
+#!/bin/sh
+# git-secrets の prepare-commit-msg フック。
+set -eu
+git secrets --prepare_commit_msg_hook -- "$@"
