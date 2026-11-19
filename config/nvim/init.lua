@@ -88,15 +88,30 @@ require("lazy").setup({
       })
     end },
 
-  -- Markdown を nvim の中で整形表示する。ブラウザは開かない
-  { "MeanderingProgrammer/render-markdown.nvim",
-    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
-    ft = { "markdown" },
-    opts = {} },
-
-  -- Mermaid や画像をインラインで表示する。mermaid は mmdc で画像に変換する
+  -- Mermaid や画像をインラインで表示する。mermaid は mmdc で画像に変換する。
+  -- Markdown 本体は整形せず、そのまま表示する（整形表示は見にくかったため外した）
+  --
+  -- picker は git grep のためだけに有効にする。git grep は追跡しているファイルだけを見るので、
+  -- node_modules や生成物が混ざらない。LSP が効かない言語や、文字列として探すときに使う
   { "folke/snacks.nvim", priority = 1000, lazy = false,
-    opts = { image = { enabled = true } } },
+    opts = { image = { enabled = true }, picker = { enabled = true } },
+    -- ":" から呼ぶ短いコマンド。:Gg は引数なしなら入力しながら検索する
+    init = function()
+      vim.api.nvim_create_user_command("Gg", function(c)
+        Snacks.picker.git_grep(c.args ~= "" and { search = c.args } or {})
+      end, { nargs = "*", desc = "git grep" })
+      vim.api.nvim_create_user_command("Gf", function() Snacks.picker.git_files() end,
+        { desc = "追跡ファイルを探す" })
+      vim.api.nvim_create_user_command("Gb", function() Snacks.picker.buffers() end,
+        { desc = "開いているバッファ" })
+    end,
+    keys = {
+      { "<leader>/", function() Snacks.picker.git_grep() end, desc = "git grep（入力しながら検索）" },
+      { "<leader>p", function() Snacks.picker.git_files() end, desc = "追跡ファイルを探す" },
+      { "<leader>b", function() Snacks.picker.buffers() end, desc = "開いているバッファ" },
+      { "<leader>*", function() Snacks.picker.git_grep({ search = vim.fn.expand("<cword>") }) end,
+        desc = "git grep（カーソル下の単語）" },
+    } },
 }, {
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
 })

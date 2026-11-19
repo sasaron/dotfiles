@@ -1,0 +1,15 @@
+#!/bin/sh
+# コミットメッセージを調べる。git-secrets で秘密を、commitlint で Conventional Commits の
+# 規約を見る。規則は chezmoi/dot_config/commitlint/commitlint.config.js にある。
+# commitlint がなければ警告して通す（導入前の Mac でコミットできなくならないように）。
+set -eu
+
+git secrets --commit_msg_hook -- "$@"
+
+if ! command -v commitlint >/dev/null 2>&1; then
+  echo "commit-msg: commitlint がないので規約を調べない（npm の @commitlint/cli）" >&2
+  exit 0
+fi
+
+root="$(git rev-parse --show-toplevel)"
+commitlint --config "$root/chezmoi/dot_config/commitlint/commitlint.config.js" --edit "$1"

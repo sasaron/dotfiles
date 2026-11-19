@@ -1,0 +1,5 @@
+#!/bin/sh
+# git-secrets で、ステージした内容に秘密が入っていないか調べる。
+# core.hooksPath で有効にする（chezmoi/.chezmoiscripts/run_after_15-git-hooks.sh.tmpl）
+set -eu
+git secrets --pre_commit_hook -- "$@"

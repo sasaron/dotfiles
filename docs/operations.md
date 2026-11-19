@@ -18,6 +18,7 @@
 | スクリプト | 宣言の場所 | 状態の調べ方 |
 |---|---|---|
 | `before_10-homebrew` | `mac/Brewfile` | `brew bundle check --no-upgrade`。不足があれば `brew bundle install --no-upgrade` |
+| `after_15-git-hooks` | `.githooks/` | `core.hooksPath` がリポジトリの `.githooks` か。違うときだけ書き、hook の実行ビットも確かめる |
 | `after_20-vscode-extensions` | `packages.yaml` の `vscode` | `code --list-extensions`（大文字と小文字を区別しない） |
 | `after_25-claude-code` | スクリプト自身 | `~/.local/bin/claude` があるか。なければ公式の `install.sh` を実行する。更新は Claude Code の自動更新に任せる |
 | `after_30-npm-packages` | `packages.yaml` の `npm` | `npm ls -g`。`@` で版を指定したものは版も比べる |
@@ -241,7 +242,7 @@ Settings の Profiles、Advanced、Semantic History で次のとおり設定す�
 移動する。2026-11-19、headless の nvim）。iTerm を分割する側と、Cmd+クリックからの呼び出しは
 未確認。実機では、右に分割されること、2 回目で同じペインに開くことを確認する。
 
-### nvim で Markdown、Mermaid、Go、TypeScript を見る
+### nvim で Mermaid、Go、TypeScript を見る
 
 設定は `config/nvim/init.lua` にあり、chezmoi が `~/.config/nvim` へリンクする。
 プラグインは lazy.nvim で入れ、版は `config/nvim/lazy-lock.json` で固定する。
@@ -249,10 +250,10 @@ Settings の Profiles、Advanced、Semantic History で次のとおり設定す�
 
 | 用途 | 手段 | 外部コマンドの入れ先 |
 |---|---|---|
-| Markdown の整形表示 | render-markdown.nvim（nvim の中で描画。ブラウザは開かない） | なし |
 | Mermaid、画像のインライン表示 | snacks.nvim の image。mermaid は `mmdc` で PNG にする | `imagemagick` は Brewfile、`@mermaid-js/mermaid-cli` は packages.yaml の npm |
 | Go | gopls（`gd` で定義、`gr` で参照） | mise（config/mise/config.toml） |
 | TypeScript | `tsc --lsp`（TypeScript 7 以降） | packages.yaml の npm の `typescript` |
+| 文字列検索とジャンプ | snacks.nvim の picker（`git_grep`）。`<leader>/` で入力しながら検索、`<leader>*` でカーソル下の単語を検索 | `git` |
 | 構文解析 | nvim-treesitter（初回起動時にパーサをコンパイルする） | `tree-sitter-cli` は Brewfile |
 
 TypeScript の LSP に typescript-language-server を使わないのは、TypeScript 7.0.2 の
@@ -272,13 +273,31 @@ graphics protocol に対応しているため、init.lua は iTerm のときだ�
 `mmd-show` が OSC 1337 を出力すること。実機の iTerm 上の見た目は未確認で、
 次を確かめる。herdr の中で画像が通るかも未確認。
 
-1. `.md` を nvim で開き、見出しやコードブロックが整形され、カーソル行で生の表示に戻る
-2. mermaid の fenced block が、インライン画像として表示される
-3. 表示されなければ `:checkhealth snacks` を見る
+1. mermaid の fenced block が、インライン画像として表示される
+2. 表示されなければ `:checkhealth snacks` を見る
+
+picker は git grep のためだけに有効にしている。`git grep` は追跡しているファイルだけを見るので、
+node_modules や生成物が混ざらない。snacks の `git_grep` が `git grep --line-number --column
+--no-color -I` を実行することは、ソース（`lua/snacks/picker/source/git.lua`、2026-11-20）で確認した。
+headless の nvim で、`search` を渡すと結果が返ることまで試した。対話の見た目は未確認。
+git の追跡外のファイルは対象外で、大文字小文字を区別する。
+
+`:` から呼ぶ短いコマンドと、`<leader>`（スペース）のショートカットを用意している。
+`/` は buffer 内検索なので上書きしていない。
+
+| 操作 | コマンド | ショートカット |
+| --- | --- | --- |
+| git grep（引数なしなら入力しながら） | `:Gg [語]` | `<leader>/` |
+| カーソル下の単語を git grep | | `<leader>*` |
+| 追跡ファイルを探す | `:Gf` | `<leader>p` |
+| 開いているバッファ | `:Gb` | `<leader>b` |
 
 新しい Mac では mmdc が使う Chrome が必要になる。mermaid-cli の puppeteer は postinstall
 で Chrome を取得するが、npm の `allowScripts` に止められた場合は
 `npx puppeteer browsers install chrome-headless-shell` で入れる。
+
+Markdown 本体は整形せず、そのまま表示する。render-markdown.nvim は一度入れたが、
+表や見出しの整形表示が見にくく、2026-11-20 に外した。
 
 ### iTerm の設定の export と import
 
@@ -290,3 +309,32 @@ folder」が有効で、`~/Documents/iTerm2` の plist を読み書きしてい�
 
 Semantic History などの設定は、この plist に保存される。変更したら
 `bin/export-iterm-settings.sh` で `local/iterm/`（Git 管理外）にバックアップする。
+
+### コミットの規約と hook
+
+コミットメッセージは Conventional Commits にする。`type(scope): subject` の形で、`scope` は省略できる。
+規則は `chezmoi/dot_config/commitlint/commitlint.config.js` にある。
+
+- type は `build`、`chore`、`ci`、`docs`、`feat`、`fix`、`perf`、`refactor`、`revert`、`style`、`test`
+- subject は空にせず、先頭を大文字にせず、末尾にピリオドを付けない。`Neovim` のような固有名詞は途中なら使える。日本語でもよい
+- 1 行目は 72 文字まで。本文と脚注の前は空行を空ける
+
+hook は `.githooks/` にあり、`after_15-git-hooks` が `core.hooksPath` で有効にする。
+
+| hook | 内容 |
+|---|---|
+| `pre-commit` | git-secrets でステージした内容を調べる |
+| `prepare-commit-msg` | git-secrets |
+| `commit-msg` | git-secrets と commitlint。commitlint がなければ警告して通す |
+
+`core.hooksPath` を使うと `.git/hooks` の中身は呼ばれなくなる。以前の `.git/hooks` は git-secrets の
+3 つだけで、`.githooks` に移してある。GitHub のマージコミット（`Merge pull request ...`）は
+commitlint の既定で対象外になる。
+
+規則は 2026-11-20 に commitlint 19.8.0 で試した。`feat(nvim): add a Neovim config` は通り、
+`Add a Neovim config`（type なし）、`docs: Update operations`（先頭が大文字）、末尾のピリオド、
+73 文字以上の 1 行目は拒否される。それ以前の履歴は英語の命令形で type がなく、書き換えない。
+
+config の `extends: ['@commitlint/config-conventional']` は使わない。commitlint は extends を
+設定ファイルの場所から解決し、`~/.config/commitlint` からは見つからず、設定が読めないまま
+規約が効いていなかったため、規則をすべて書いた。
