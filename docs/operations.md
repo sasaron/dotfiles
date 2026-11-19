@@ -282,6 +282,16 @@ node_modules や生成物が混ざらない。snacks の `git_grep` が `git gre
 headless の nvim で、`search` を渡すと結果が返ることまで試した。対話の見た目は未確認。
 git の追跡外のファイルは対象外で、大文字小文字を区別する。
 
+`:` から呼ぶ短いコマンドと、`<leader>`（スペース）のショートカットを用意している。
+`/` は buffer 内検索なので上書きしていない。
+
+| 操作 | コマンド | ショートカット |
+| --- | --- | --- |
+| git grep（引数なしなら入力しながら） | `:Gg [語]` | `<leader>/` |
+| カーソル下の単語を git grep | | `<leader>*` |
+| 追跡ファイルを探す | `:Gf` | `<leader>p` |
+| 開いているバッファ | `:Gb` | `<leader>b` |
+
 新しい Mac では mmdc が使う Chrome が必要になる。mermaid-cli の puppeteer は postinstall
 で Chrome を取得するが、npm の `allowScripts` に止められた場合は
 `npx puppeteer browsers install chrome-headless-shell` で入れる。
