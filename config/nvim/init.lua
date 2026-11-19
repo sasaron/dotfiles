@@ -90,8 +90,16 @@ require("lazy").setup({
 
   -- Mermaid や画像をインラインで表示する。mermaid は mmdc で画像に変換する。
   -- Markdown 本体は整形せず、そのまま表示する（整形表示は見にくかったため外した）
+  --
+  -- picker は git grep のためだけに有効にする。git grep は追跡しているファイルだけを見るので、
+  -- node_modules や生成物が混ざらない。LSP が効かない言語や、文字列として探すときに使う
   { "folke/snacks.nvim", priority = 1000, lazy = false,
-    opts = { image = { enabled = true } } },
+    opts = { image = { enabled = true }, picker = { enabled = true } },
+    keys = {
+      { "<leader>/", function() Snacks.picker.git_grep() end, desc = "git grep（入力しながら検索）" },
+      { "<leader>*", function() Snacks.picker.git_grep({ search = vim.fn.expand("<cword>") }) end,
+        desc = "git grep（カーソル下の単語）" },
+    } },
 }, {
   lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
 })

@@ -253,6 +253,7 @@ Settings の Profiles、Advanced、Semantic History で次のとおり設定す�
 | Mermaid、画像のインライン表示 | snacks.nvim の image。mermaid は `mmdc` で PNG にする | `imagemagick` は Brewfile、`@mermaid-js/mermaid-cli` は packages.yaml の npm |
 | Go | gopls（`gd` で定義、`gr` で参照） | mise（config/mise/config.toml） |
 | TypeScript | `tsc --lsp`（TypeScript 7 以降） | packages.yaml の npm の `typescript` |
+| 文字列検索とジャンプ | snacks.nvim の picker（`git_grep`）。`<leader>/` で入力しながら検索、`<leader>*` でカーソル下の単語を検索 | `git` |
 | 構文解析 | nvim-treesitter（初回起動時にパーサをコンパイルする） | `tree-sitter-cli` は Brewfile |
 
 TypeScript の LSP に typescript-language-server を使わないのは、TypeScript 7.0.2 の
@@ -274,6 +275,12 @@ graphics protocol に対応しているため、init.lua は iTerm のときだ�
 
 1. mermaid の fenced block が、インライン画像として表示される
 2. 表示されなければ `:checkhealth snacks` を見る
+
+picker は git grep のためだけに有効にしている。`git grep` は追跡しているファイルだけを見るので、
+node_modules や生成物が混ざらない。snacks の `git_grep` が `git grep --line-number --column
+--no-color -I` を実行することは、ソース（`lua/snacks/picker/source/git.lua`、2026-11-20）で確認した。
+headless の nvim で、`search` を渡すと結果が返ることまで試した。対話の見た目は未確認。
+git の追跡外のファイルは対象外で、大文字小文字を区別する。
 
 新しい Mac では mmdc が使う Chrome が必要になる。mermaid-cli の puppeteer は postinstall
 で Chrome を取得するが、npm の `allowScripts` に止められた場合は
