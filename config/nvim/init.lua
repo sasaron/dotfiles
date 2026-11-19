@@ -88,13 +88,8 @@ require("lazy").setup({
       })
     end },
 
-  -- Markdown を nvim の中で整形表示する。ブラウザは開かない
-  { "MeanderingProgrammer/render-markdown.nvim",
-    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
-    ft = { "markdown" },
-    opts = {} },
-
-  -- Mermaid や画像をインラインで表示する。mermaid は mmdc で画像に変換する
+  -- Mermaid や画像をインラインで表示する。mermaid は mmdc で画像に変換する。
+  -- Markdown 本体は整形せず、そのまま表示する（整形表示は見にくかったため外した）
   { "folke/snacks.nvim", priority = 1000, lazy = false,
     opts = { image = { enabled = true } } },
 }, {

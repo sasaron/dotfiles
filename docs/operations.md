@@ -242,7 +242,7 @@ Settings の Profiles、Advanced、Semantic History で次のとおり設定す�
 移動する。2026-11-19、headless の nvim）。iTerm を分割する側と、Cmd+クリックからの呼び出しは
 未確認。実機では、右に分割されること、2 回目で同じペインに開くことを確認する。
 
-### nvim で Markdown、Mermaid、Go、TypeScript を見る
+### nvim で Mermaid、Go、TypeScript を見る
 
 設定は `config/nvim/init.lua` にあり、chezmoi が `~/.config/nvim` へリンクする。
 プラグインは lazy.nvim で入れ、版は `config/nvim/lazy-lock.json` で固定する。
@@ -250,7 +250,6 @@ Settings の Profiles、Advanced、Semantic History で次のとおり設定す�
 
 | 用途 | 手段 | 外部コマンドの入れ先 |
 |---|---|---|
-| Markdown の整形表示 | render-markdown.nvim（nvim の中で描画。ブラウザは開かない） | なし |
 | Mermaid、画像のインライン表示 | snacks.nvim の image。mermaid は `mmdc` で PNG にする | `imagemagick` は Brewfile、`@mermaid-js/mermaid-cli` は packages.yaml の npm |
 | Go | gopls（`gd` で定義、`gr` で参照） | mise（config/mise/config.toml） |
 | TypeScript | `tsc --lsp`（TypeScript 7 以降） | packages.yaml の npm の `typescript` |
@@ -273,13 +272,15 @@ graphics protocol に対応しているため、init.lua は iTerm のときだ�
 `mmd-show` が OSC 1337 を出力すること。実機の iTerm 上の見た目は未確認で、
 次を確かめる。herdr の中で画像が通るかも未確認。
 
-1. `.md` を nvim で開き、見出しやコードブロックが整形され、カーソル行で生の表示に戻る
-2. mermaid の fenced block が、インライン画像として表示される
-3. 表示されなければ `:checkhealth snacks` を見る
+1. mermaid の fenced block が、インライン画像として表示される
+2. 表示されなければ `:checkhealth snacks` を見る
 
 新しい Mac では mmdc が使う Chrome が必要になる。mermaid-cli の puppeteer は postinstall
 で Chrome を取得するが、npm の `allowScripts` に止められた場合は
 `npx puppeteer browsers install chrome-headless-shell` で入れる。
+
+Markdown 本体は整形せず、そのまま表示する。render-markdown.nvim は一度入れたが、
+表や見出しの整形表示が見にくく、2026-11-20 に外した。
 
 ### iTerm の設定の export と import
 
