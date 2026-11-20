@@ -559,6 +559,21 @@ checksum = "sha256:1ebd7c87baffb9f1c47169b640872bf5fb1e4408079c691af527be9561d8f
 url = "https://github.com/protocolbuffers/protobuf/releases/download/v29.6/protoc-29.6-win64.zip"
 url_api = "https://api.github.com/repos/protocolbuffers/protobuf/releases/assets/350795088"
 
+[[tools."pypi:awslogs"]]
+version = "0.15.0"
+backend = "pypi:awslogs"
+specifiers = ["0"]
+
+[[tools."pypi:cfn-lint"]]
+version = "1.60.1"
+backend = "pypi:cfn-lint"
+specifiers = ["1"]
+
+[[tools."pypi:gcalcli"]]
+version = "4.5.1"
+backend = "pypi:gcalcli"
+specifiers = ["4"]
+
 [[tools.python]]
 version = "3.13.18"
 backend = "core:python"

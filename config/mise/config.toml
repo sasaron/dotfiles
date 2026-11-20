@@ -31,6 +31,11 @@ terraform = "1"
 tflint = "0"
 terraform-docs = "0"
 
+# Python 製の CLI。pypi バックエンドが uv で隔離した環境に入れるので、Python の版と切り離せる
+"pypi:cfn-lint" = "1"
+"pypi:awslogs" = "0"
+"pypi:gcalcli" = "4"
+
 # シェルで使う道具。zshrc の starship init と alias より前に mise activate を置いてある
 starship = "1"
 eza = "0"
