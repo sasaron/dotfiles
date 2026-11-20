@@ -282,6 +282,11 @@ node_modules や生成物が混ざらない。snacks の `git_grep` が `git gre
 headless の nvim で、`search` を渡すと結果が返ることまで試した。対話の見た目は未確認。
 git の追跡外のファイルは対象外で、大文字小文字を区別する。
 
+ImageMagick は外せない。snacks の変換は、PNG を作ったあとに `magick identify` で大きさを調べる。
+`magick` がないとこの工程が `No command available` で失敗し、Mermaid も表示されない
+（2026-11-20、snacks.nvim で確認）。ImageMagick は脆弱性の報告が多いので、`brew upgrade imagemagick`
+で最新に保つ。信頼できない画像は nvim で開かない。
+
 `:` から呼ぶ短いコマンドと、`<leader>`（スペース）のショートカットを用意している。
 `/` は buffer 内検索なので上書きしていない。
 
