@@ -30,6 +30,7 @@ protobuf = "29"
 terraform = "1"
 tflint = "0"
 terraform-docs = "0"
+gcloud = "594"
 
 # Python 製の CLI。pypi バックエンドが uv で隔離した環境に入れるので、Python の版と切り離せる
 "pypi:cfn-lint" = "1"
