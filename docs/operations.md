@@ -28,7 +28,7 @@
 | `after_46-claude-settings` | `config/ai/claude/settings.json` の `permissions.ask`、`permissions.deny`、`hooks` | `bin/sync-claude-settings.py` が足りない規則とフックを調べる。差分がなければ書き込まない |
 | `after_50-macos-defaults` | スクリプト自身 | `defaults read` と `git config --get` の値 |
 
-Homebrew のスクリプトは設定ファイルより先に実行し、starship や antidote などの依存を揃える。
+Homebrew のスクリプトは設定ファイルより先に実行し、antidote などの依存を揃える。
 `packages.yaml` は chezmoi の [declarative なパッケージ導入](https://www.chezmoi.io/user-guide/advanced/install-packages-declaratively/)
 の形に倣った。ただし、そこで使われている `run_onchange_` は一度成功すると内容が変わるまで
 再実行されない。コマンドがなかったときのスキップや一部の失敗が残るので、`run_` にした。
@@ -263,10 +263,10 @@ installation」で初期化に失敗したため（2026-11-19、この Mac で�
 snacks.nvim の対応端末は kitty、ghostty、wezterm で、iTerm は自動では認識されない
 （ソースの `lua/snacks/image/terminal.lua`、2026-11-19 確認）。iTerm 3.7.7 は kitty
 graphics protocol に対応しているため、init.lua は iTerm のときだけ `SNACKS_KITTY=true`
-を設定して kitty として扱わせる。tmux と zellij の中では設定しない。
+を設定して kitty として扱わせる。tmux の中では設定しない。
 
 `mmd-show file.mmd` は、mermaid を PNG にして iTerm の OSC 1337 で表示する。nvim の
-インライン表示が使えないときの代替で、tmux と zellij の中では表示されない。
+インライン表示が使えないときの代替で、tmux の中では表示されない。
 
 確認済みなのは、headless の nvim で gopls と `tsc --lsp` が attach して定義ジャンプが
 1 件返ること、Markdown の mermaid ブロックが snacks 経由で PNG になること、

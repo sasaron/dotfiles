@@ -28,6 +28,14 @@ gitleaks = "8"
 grpcurl = "1"
 protobuf = "29"
 terraform = "1"
+tflint = "0"
+terraform-docs = "0"
+
+# シェルで使う道具。zshrc の starship init と alias より前に mise activate を置いてある
+starship = "1"
+eza = "0"
+bat = "0"
+"aqua:dalance/procs" = "0"
 
 # 以前 packages.yaml の go にあった一覧。latest の解決結果は mise.lock に残る。
 # goplay は v1.0.0 の go.mod に依存が足りず、mise が付ける -mod=readonly では
