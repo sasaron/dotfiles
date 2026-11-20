@@ -2,7 +2,7 @@
 # mermaid（.mmd）を画像にして、iTerm の中にそのまま表示する。
 # Markdown に埋めた mermaid は、nvim のインライン表示（snacks.nvim）を使う。
 # 使い方: mmd-show <file.mmd>
-# iTerm 独自の OSC 1337 で表示する。tmux や zellij の中では表示されない。
+# iTerm 独自の OSC 1337 で表示する。tmux の中では表示されない。
 set -eu
 
 src="${1:-}"

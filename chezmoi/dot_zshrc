@@ -122,6 +122,11 @@ bindkey -M viins '^Y' yank
 bindkey -M viins '^R' history-incremental-search-backward
 bindkey -M viins '^?' backward-delete-char
 
+# mise。Node、Go、Python、Go 製ツール、starship、eza、bat、procs を入れる（config/mise/config.toml）。
+# PATH の先頭に足すので、Homebrew の同名コマンドより優先される。starship init と
+# eza、bat の存在確認より前に置く
+eval "$(mise activate zsh)"
+
 # モードをカーソル形状で示す。starship init より前に置く。後ろに置くと
 # starship が zle-keymap-select を差し替えてモード切替の再描画が止まる
 function zle-keymap-select() {
@@ -253,10 +258,6 @@ y() {
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-
-# mise。Node、Go、Python と Go 製ツールを入れる（config/mise/config.toml）。
-# PATH の先頭に足すので、Homebrew の同名コマンドより優先される
-eval "$(mise activate zsh)"
 
 # aws の補完は bash 形式の aws_completer を使う。mise activate で PATH が通ってから登録する
 if (( $+commands[aws_completer] )); then

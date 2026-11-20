@@ -14,6 +14,8 @@ idiomatic_version_file_enable_tools = ["ruby"]
 node = "24"
 go = "1.27"
 python = "3.13"
+# パッケージマネージャ。Homebrew の node に付く corepack の pnpm ではなく mise で版を固定する
+pnpm = "12"
 # リポジトリごとの道具の版は各リポジトリの aqua.yaml が決める（hakomichi-terraform など）
 aqua = "2.62.3"
 
@@ -26,6 +28,20 @@ gitleaks = "8"
 grpcurl = "1"
 protobuf = "29"
 terraform = "1"
+tflint = "0"
+terraform-docs = "0"
+gcloud = "594"
+
+# Python 製の CLI。pypi バックエンドが uv で隔離した環境に入れるので、Python の版と切り離せる
+"pypi:cfn-lint" = "1"
+"pypi:awslogs" = "0"
+"pypi:gcalcli" = "4"
+
+# シェルで使う道具。zshrc の starship init と alias より前に mise activate を置いてある
+starship = "1"
+eza = "0"
+bat = "0"
+"aqua:dalance/procs" = "0"
 
 # 以前 packages.yaml の go にあった一覧。latest の解決結果は mise.lock に残る。
 # goplay は v1.0.0 の go.mod に依存が足りず、mise が付ける -mod=readonly では

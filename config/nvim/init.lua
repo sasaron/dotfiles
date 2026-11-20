@@ -32,10 +32,10 @@ vim.opt.rtp:prepend(lazypath)
 
 -- snacks.nvim は iTerm を端末として認識しない（対応は kitty、ghostty、wezterm のみ。
 -- 2026-11-19 にソースで確認）。iTerm 3.7.7 は kitty graphics protocol に対応しているので、
--- iTerm のときだけ kitty として扱わせる。tmux と zellij の中では強制しない。
+-- iTerm のときだけ kitty として扱わせる。tmux の中では強制しない。
 -- 実機の iTerm でインライン表示できるかは未確認
 if vim.env.TERM_PROGRAM == "iTerm.app" and vim.env.SNACKS_KITTY == nil
-  and vim.env.TMUX == nil and vim.env.ZELLIJ == nil then
+  and vim.env.TMUX == nil then
   vim.env.SNACKS_KITTY = "true"
 end
 

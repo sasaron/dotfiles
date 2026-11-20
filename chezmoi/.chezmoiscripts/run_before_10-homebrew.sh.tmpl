@@ -1,5 +1,5 @@
 #!/bin/bash
-# mac/Brewfile のうち未導入のものを入れる。starship や antidote などの依存を揃えるため、
+# mac/Brewfile のうち未導入のものを入れる。antidote などの依存を揃えるため、
 # 設定ファイルより先に実行する。すべて導入済みなら brew bundle check だけで終わる
 set -euo pipefail
 {{ template "brew-env.sh" . }}

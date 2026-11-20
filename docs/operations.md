@@ -28,7 +28,7 @@
 | `after_46-claude-settings` | `config/ai/claude/settings.json` の `permissions.ask`、`permissions.deny`、`hooks` | `bin/sync-claude-settings.py` が足りない規則とフックを調べる。差分がなければ書き込まない |
 | `after_50-macos-defaults` | スクリプト自身 | `defaults read` と `git config --get` の値 |
 
-Homebrew のスクリプトは設定ファイルより先に実行し、starship や antidote などの依存を揃える。
+Homebrew のスクリプトは設定ファイルより先に実行し、antidote などの依存を揃える。
 `packages.yaml` は chezmoi の [declarative なパッケージ導入](https://www.chezmoi.io/user-guide/advanced/install-packages-declaratively/)
 の形に倣った。ただし、そこで使われている `run_onchange_` は一度成功すると内容が変わるまで
 再実行されない。コマンドがなかったときのスキップや一部の失敗が残るので、`run_` にした。
@@ -107,7 +107,7 @@ Homebrew で入れていたときは、awscli、buf、gitleaks の zsh 補完が
 
 `go:` バックエンドは `go install -mod=readonly` でビルドする。goplay は v1.0.0 の go.mod に
 依存が足りずに失敗するため、一覧から外した。deno は `pdf-viewer` が aqua.yaml で版を固定しているので、グローバルには
-入れていない（Brewfile に残している）。golangci-lint は以前と同じモジュールパスに
+入れていない。golangci-lint は以前と同じモジュールパスに
 してあるので v1 系（v1.64.8）になる。
 
 ## 新しい Mac での bootstrap
@@ -263,10 +263,10 @@ installation」で初期化に失敗したため（2026-11-19、この Mac で�
 snacks.nvim の対応端末は kitty、ghostty、wezterm で、iTerm は自動では認識されない
 （ソースの `lua/snacks/image/terminal.lua`、2026-11-19 確認）。iTerm 3.7.7 は kitty
 graphics protocol に対応しているため、init.lua は iTerm のときだけ `SNACKS_KITTY=true`
-を設定して kitty として扱わせる。tmux と zellij の中では設定しない。
+を設定して kitty として扱わせる。tmux の中では設定しない。
 
 `mmd-show file.mmd` は、mermaid を PNG にして iTerm の OSC 1337 で表示する。nvim の
-インライン表示が使えないときの代替で、tmux と zellij の中では表示されない。
+インライン表示が使えないときの代替で、tmux の中では表示されない。
 
 確認済みなのは、headless の nvim で gopls と `tsc --lsp` が attach して定義ジャンプが
 1 件返ること、Markdown の mermaid ブロックが snacks 経由で PNG になること、
@@ -281,6 +281,11 @@ node_modules や生成物が混ざらない。snacks の `git_grep` が `git gre
 --no-color -I` を実行することは、ソース（`lua/snacks/picker/source/git.lua`、2026-11-20）で確認した。
 headless の nvim で、`search` を渡すと結果が返ることまで試した。対話の見た目は未確認。
 git の追跡外のファイルは対象外で、大文字小文字を区別する。
+
+ImageMagick は外せない。snacks の変換は、PNG を作ったあとに `magick identify` で大きさを調べる。
+`magick` がないとこの工程が `No command available` で失敗し、Mermaid も表示されない
+（2026-11-20、snacks.nvim で確認）。ImageMagick は脆弱性の報告が多いので、`brew upgrade imagemagick`
+で最新に保つ。信頼できない画像は nvim で開かない。
 
 `:` から呼ぶ短いコマンドと、`<leader>`（スペース）のショートカットを用意している。
 `/` は buffer 内検索なので上書きしていない。
