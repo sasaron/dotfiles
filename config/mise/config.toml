@@ -14,6 +14,8 @@ idiomatic_version_file_enable_tools = ["ruby"]
 node = "24"
 go = "1.27"
 python = "3.13"
+# パッケージマネージャ。Homebrew の node に付く corepack の pnpm ではなく mise で版を固定する
+pnpm = "12"
 # リポジトリごとの道具の版は各リポジトリの aqua.yaml が決める（hakomichi-terraform など）
 aqua = "2.62.3"
 

@@ -53,4 +53,3 @@ packages:
     - prettier
     - ts-node
     - typescript
-    - yarn

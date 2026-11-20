@@ -50,8 +50,6 @@ brew "zsh"
 brew "git"
 brew "node"
 brew "node@22"
-brew "yarn"
-brew "deno"
 brew "groovy"
 brew "python@3.11"
 # Go、開発で使う Node と Python、Go 製ツール、開発用の CLI（awscli、buf、cmake、gitleaks、

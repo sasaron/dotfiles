@@ -107,7 +107,7 @@ Homebrew で入れていたときは、awscli、buf、gitleaks の zsh 補完が
 
 `go:` バックエンドは `go install -mod=readonly` でビルドする。goplay は v1.0.0 の go.mod に
 依存が足りずに失敗するため、一覧から外した。deno は `pdf-viewer` が aqua.yaml で版を固定しているので、グローバルには
-入れていない（Brewfile に残している）。golangci-lint は以前と同じモジュールパスに
+入れていない。golangci-lint は以前と同じモジュールパスに
 してあるので v1 系（v1.64.8）になる。
 
 ## 新しい Mac での bootstrap
